@@ -1,0 +1,95 @@
+---
+title: "Indicador do Boi Gordo Cepea/B3"
+description: ""
+author script: 
+  - name: "Ítalo Marques-Monteiro"
+    github: https://github.com/italomarquesmonteiro
+    kaggle: https://www.kaggle.com/talomarquesmonteiro
+    linkedin: linkedin.com/in/ítalo-monteiro-0b2516144
+    lattes: http://lattes.cnpq.br/7174985368517137
+    orcid_id: https://orcid.org/0000-0003-4367-1034
+    affiliation: Anhanguera College  
+        - Department: Veterinary Medicine
+date: "2023-08-18"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+ 
+
+```{r} 
+library(conflicted)
+library(tidyverse)
+```
+
+```{r}
+readxl::read_xlsx(
+  "C:/Users/italo/Downloads/CEPEA_20230818175724.xlsx") |>
+  readr::write_csv(
+    "C:/Users/italo/OneDrive/Área de Trabalho/VsCode/cepea/CepeaBoiGordo.csv")
+```
+
+
+```{r}
+indicador_boi <- readr::read_csv(
+  "C:/Users/italo/OneDrive/Área de Trabalho/VsCode/cepea/CepeaBoiGordo.csv",
+    skip = 3) |>
+  janitor::clean_names("snake") |>
+  dplyr::rename(
+    arroba_real = a_vista_r,
+      arroba_dollar = a_vista_us) |>
+  tidyr::separate(data, c("dia", "mes", "ano")) |>
+  dplyr::mutate(
+    dia = as.double(dia),
+      mes = as.double(mes),
+        ano = as.double(ano),
+          data = lubridate::make_date(ano, mes, dia), .before = arroba_real) |>
+  dplyr::glimpse()
+```
+
+
+```{r}
+scaleFUN <- function(x) format(round(as.numeric(x), 0), nsmall= 0, big.mark = ",")
+
+# Create line chart theme
+theme_swd_line <-   theme(
+  plot.title = element_text(size = rel(1.75), color = "steelblue"), #steelblue
+  plot.margin = margin(20, 20, 20, 20),
+  text = element_text(family = "Roboto", color = "#979797"),
+  axis.title.x = element_text(hjust = 0, vjust = -0.5),
+  axis.title.y = element_blank(),
+  axis.text.y = element_blank(),
+  line = element_blank(),
+  rect = element_blank()
+)
+```
+
+```{r}
+indicador_boi |>
+  dplyr::filter(data >= "2023-08-15") |>
+  dplyr::arrange(desc(arroba_real))
+```
+```{r}
+indicador_boi |>
+  #dplyr::filter(data >= "2020-01-01") |>
+  ggplot2::ggplot(aes(x = data, y = arroba_real)) +
+              geom_line(color = "black") +
+              geom_smooth(method = "loess", se = FALSE) +
+              theme_swd_line +
+              labs(
+                title = "Indicador do Boi Gordo",
+                subtitle = "# Fonte: CEPEA/B3(2023)
+
+                by Ítalo Monteiro",
+                x = "Data"
+              ) +
+              geom_text(
+                    data = indicador_boi[indicador_boi$data == "2023-08-17", ],
+                            aes(label = scaleFUN(arroba_real)),
+                            hjust = -0.6,
+                            vjust = -0.5,
+                            size = 5,
+                            color = "steelblue",
+                            fontface = "bold")
+```
