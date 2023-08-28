@@ -16,7 +16,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
- 
+
 
 ```{r} 
 library(conflicted)
@@ -25,7 +25,7 @@ library(tidyverse)
 
 ```{r}
 readxl::read_xlsx(
-  "C:/Users/italo/Downloads/CEPEA_20230818175724.xlsx") |>
+  "C:/Users/italo/Downloads/CEPEA_20230828104827.xlsx") |>
   readr::write_csv(
     "C:/Users/italo/OneDrive/Área de Trabalho/VsCode/cepea/CepeaBoiGordo.csv")
 ```
@@ -70,26 +70,66 @@ indicador_boi |>
   dplyr::filter(data >= "2023-08-15") |>
   dplyr::arrange(desc(arroba_real))
 ```
+
+
+```{r}
+indicador_boi |>
+  #dplyr::filter(data >= "2023-08-01") |>
+  ggplot2::ggplot(aes(x = data, y = arroba_real)) +
+              geom_line(color = "steelblue", size = 1) +
+              geom_col(alpha = 0.9) +
+              scale_x_date(date_breaks = "1 day", date_labels = "%Y-%m-%d") +
+              #scale_y_continuous(limits = c(195, 250, 1)) +
+              theme_swd_line +
+              labs(
+                title = "Indicador @ do Boi Gordo",
+                subtitle = "# Fonte: CEPEA/B3(2023)
+
+                by Ítalo Monteiro",
+                x = "Data"
+              ) +
+              theme(axis.text.x = element_text(size = 10, color = "black",
+                angle = 60, hjust = 1, vjust = 1)) +
+              geom_text(
+                    data = indicador_boi[indicador_boi$data == "2023-08-25", ],
+                            aes(label = scaleFUN(arroba_real)),
+                            hjust = -0.6,
+                            vjust = -0.5,
+                            size = 5,
+                            color = "steelblue",
+                            fontface = "bold") +
+                annotate("text", label = "R$/@",
+                    x = as.Date(
+                        "2023-08-25"), y = 203, size = 5,
+                          colour = "steelblue", fontface = "bold")
+```
 ```{r}
 indicador_boi |>
   #dplyr::filter(data >= "2020-01-01") |>
   ggplot2::ggplot(aes(x = data, y = arroba_real)) +
               geom_line(color = "black") +
               geom_smooth(method = "loess", se = FALSE) +
+              scale_x_date(date_breaks = "1 year", date_labels = "%Y-%m-%d") +
+              theme(axis.text.x = element_text(size = 10, color = "black",
+                angle = 60, hjust = 1, vjust = 1)) +
               theme_swd_line +
               labs(
-                title = "Indicador do Boi Gordo",
+                title = "Indicador @ do Boi Gordo",
                 subtitle = "# Fonte: CEPEA/B3(2023)
 
                 by Ítalo Monteiro",
                 x = "Data"
               ) +
               geom_text(
-                    data = indicador_boi[indicador_boi$data == "2023-08-17", ],
+                    data = indicador_boi[indicador_boi$data == "2023-08-25", ],
                             aes(label = scaleFUN(arroba_real)),
-                            hjust = -0.6,
+                            hjust = -0.1,
                             vjust = -0.5,
                             size = 5,
                             color = "steelblue",
-                            fontface = "bold")
+                            fontface = "bold") +
+                annotate("text", label = "R$/@",
+                    x = as.Date(
+                        "2023-01-01"), y = 208, size = 5,
+                          colour = "steelblue", fontface = "bold")
 ```
