@@ -1,0 +1,72 @@
+---
+title: "Peso médio do Bezerro "
+description: "Dados do CEPEA-ESALQ - Mato Grosso do Sul"
+author script: 
+  - name: "Ítalo Marques-Monteiro"
+    github: https://github.com/italomarquesmonteiro
+    kaggle: https://www.kaggle.com/talomarquesmonteiro
+    linkedin: linkedin.com/in/ítalo-monteiro-0b2516144
+    lattes: http://lattes.cnpq.br/7174985368517137
+    orcid_id: https://orcid.org/0000-0003-4367-1034
+    affiliation: Anhanguera College  
+        - Department: Veterinary Medicine
+date: "2023-08-30"
+output: html_document
+---
+
+```{r} 
+library(conflicted)
+library(tidyverse)
+```
+
+```{r}
+readxl::read_xlsx(
+  "C:/Users/italo/Downloads/CEPEA_20230830095452.xlsx") |>
+  readr::write_csv(
+    "C:/Users/italo/OneDrive/Área de Trabalho/VsCode/cepea/CepeaPesoBezerro.csv")
+```
+
+
+```{r}
+peso_bezerro <- readr::read_csv(
+  "C:/Users/italo/OneDrive/Área de Trabalho/VsCode/cepea/CepeapesoBezerro.csv",
+    skip = 3) |>
+  janitor::clean_names("snake") |>
+  dplyr::glimpse()
+```
+
+```{r}
+peso_bezerro$data <- dmy(peso_bezerro$data)
+```
+
+```{r}
+peso_bezerro |>
+    dplyr::glimpse()
+```
+
+
+```{r}
+peso_bezerro |>
+    dplyr::filter(data >= "2023-01-01") |>
+    dplyr::mutate(
+        movel_15 = zoo::rollmean(peso_medio, k = 15, fill = NA),
+        movel_30 = zoo::rollmean(peso_medio, k = 30, fill = NA),
+        movel_45 = zoo::rollmean(peso_medio, k = 45, fill = NA),
+    ) |>
+    ggplot2::ggplot(
+            aes(x = data)) +
+        geom_col(aes(y = peso_medio)) +
+        geom_line(aes(y = movel_15), color = "steelblue") +
+        geom_line(aes(y = movel_30), color = "#7c8286") +
+        geom_line(aes(y = movel_45), color = "#37393a") +
+        scale_y_continuous(limits = c(195, 220, 5)) +
+
+        labs(
+            color = "Média móvel"
+        )
+```
+
+
+```{r}
+peso_bezerro |> tibble::view()
+```

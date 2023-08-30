@@ -47,7 +47,7 @@ bezerro |>
 bezerro |>
     ggplot2::ggplot(
             aes(x = data, y = a_vista_r)) +
-        geom_line() 
+        geom_line()
 ```
 
 
