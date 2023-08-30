@@ -36,16 +36,11 @@ indicador_boi <- readr::read_csv(
   "C:/Users/italo/OneDrive/Área de Trabalho/VsCode/cepea/CepeaBoiGordo.csv",
     skip = 3) |>
   janitor::clean_names("snake") |>
-  dplyr::rename(
-    arroba_real = a_vista_r,
-      arroba_dollar = a_vista_us) |>
-  tidyr::separate(data, c("dia", "mes", "ano")) |>
-  dplyr::mutate(
-    dia = as.double(dia),
-      mes = as.double(mes),
-        ano = as.double(ano),
-          data = lubridate::make_date(ano, mes, dia), .before = arroba_real) |>
   dplyr::glimpse()
+```
+
+```{r}
+indicador_boi$data <- dmy(indicador_boi$data)
 ```
 
 
@@ -67,15 +62,15 @@ theme_swd_line <-   theme(
 
 ```{r}
 indicador_boi |>
-  dplyr::filter(data >= "2023-08-15") |>
-  dplyr::arrange(desc(arroba_real))
+  dplyr::filter(data >= "2023-08-25") |>
+  dplyr::arrange(desc(a_vista_r))
 ```
 
 
 ```{r}
 indicador_boi |>
   #dplyr::filter(data >= "2023-08-01") |>
-  ggplot2::ggplot(aes(x = data, y = arroba_real)) +
+  ggplot2::ggplot(aes(x = data, y = a_vista_r)) +
               geom_line(color = "steelblue", size = 1) +
               geom_col(alpha = 0.9) +
               scale_x_date(date_breaks = "1 day", date_labels = "%Y-%m-%d") +
@@ -92,7 +87,7 @@ indicador_boi |>
                 angle = 60, hjust = 1, vjust = 1)) +
               geom_text(
                     data = indicador_boi[indicador_boi$data == "2023-08-25", ],
-                            aes(label = scaleFUN(arroba_real)),
+                            aes(label = scaleFUN(a_vista_r)),
                             hjust = -0.6,
                             vjust = -0.5,
                             size = 5,
@@ -106,7 +101,7 @@ indicador_boi |>
 ```{r}
 indicador_boi |>
   #dplyr::filter(data >= "2020-01-01") |>
-  ggplot2::ggplot(aes(x = data, y = arroba_real)) +
+  ggplot2::ggplot(aes(x = data, y = a_vista_r)) +
               geom_line(color = "black") +
               geom_smooth(method = "loess", se = FALSE) +
               scale_x_date(date_breaks = "1 year", date_labels = "%Y-%m-%d") +
@@ -122,7 +117,7 @@ indicador_boi |>
               ) +
               geom_text(
                     data = indicador_boi[indicador_boi$data == "2023-08-25", ],
-                            aes(label = scaleFUN(arroba_real)),
+                            aes(label = scaleFUN(a_vista_r)),
                             hjust = -0.1,
                             vjust = -0.5,
                             size = 5,

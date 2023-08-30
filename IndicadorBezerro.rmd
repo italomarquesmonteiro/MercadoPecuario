@@ -1,0 +1,57 @@
+---
+title: "Indicador do Bezerro "
+description: "Dados do CEPEA-ESALQ/BM&FBOVESPA - Mato Grosso do Sul"
+author script: 
+  - name: "Ítalo Marques-Monteiro"
+    github: https://github.com/italomarquesmonteiro
+    kaggle: https://www.kaggle.com/talomarquesmonteiro
+    linkedin: linkedin.com/in/ítalo-monteiro-0b2516144
+    lattes: http://lattes.cnpq.br/7174985368517137
+    orcid_id: https://orcid.org/0000-0003-4367-1034
+    affiliation: Anhanguera College  
+        - Department: Veterinary Medicine
+date: "2023-08-30"
+output: html_document
+---
+
+```{r} 
+library(conflicted)
+library(tidyverse)
+```
+
+```{r}
+readxl::read_xlsx(
+  "C:/Users/italo/Downloads/CEPEA_20230830082318.xlsx") |>
+  readr::write_csv(
+    "C:/Users/italo/OneDrive/Área de Trabalho/VsCode/cepea/CepeaBezerro.csv")
+```
+
+```{r}
+bezerro <- readr::read_csv(
+  "C:/Users/italo/OneDrive/Área de Trabalho/VsCode/cepea/CepeaBezerro.csv",
+    skip = 3) |>
+  janitor::clean_names("snake") |>
+  dplyr::glimpse()
+```
+
+```{r}
+bezerro$data <- dmy(bezerro$data)
+```
+
+```{r}
+bezerro |>
+    dplyr::glimpse()
+```
+
+```{r}
+bezerro |>
+    ggplot2::ggplot(
+            aes(x = data, y = a_vista_r)) +
+        geom_line() 
+```
+
+
+```{r}
+bezerro |> tibble::view()
+```
+
