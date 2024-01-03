@@ -25,7 +25,8 @@ library(tidyverse)
 
 ```{r}
 readxl::read_xlsx(
-  "C:/Users/italo/Downloads/CEPEA_20230828104827.xlsx") |>
+  "C:/Users/italo/Downloads/CEPEA_20240103003539.xlsx", skip = 3) |>
+  dplyr::mutate(Data = lubridate::dmy(Data)) |>
   readr::write_csv(
     "C:/Users/italo/OneDrive/Área de Trabalho/VsCode/cepea/CepeaBoiGordo.csv")
 ```
@@ -33,14 +34,15 @@ readxl::read_xlsx(
 
 ```{r}
 indicador_boi <- readr::read_csv(
-  "C:/Users/italo/OneDrive/Área de Trabalho/VsCode/cepea/CepeaBoiGordo.csv",
-    skip = 3) |>
+  "C:/Users/italo/OneDrive/Área de Trabalho/VsCode/cepea/CepeaBoiGordo.csv") |>
   janitor::clean_names("snake") |>
   dplyr::glimpse()
 ```
 
 ```{r}
-indicador_boi$data <- dmy(indicador_boi$data)
+boi_sp <- indicador_boi |>
+  dplyr::select(-a_vista_us) |>
+  dplyr::filter(data >= "2020-10-27")
 ```
 
 
@@ -71,6 +73,7 @@ indicador_boi |>
 indicador_boi |>
   #dplyr::filter(data >= "2023-08-01") |>
   ggplot2::ggplot(aes(x = data, y = a_vista_r)) +
+              geom_smooth(method = "gam", se = FALSE) +
               geom_line(color = "steelblue", size = 1) +
               geom_col(alpha = 0.9) +
               scale_x_date(date_breaks = "1 day", date_labels = "%Y-%m-%d") +
@@ -86,7 +89,7 @@ indicador_boi |>
               theme(axis.text.x = element_text(size = 10, color = "black",
                 angle = 60, hjust = 1, vjust = 1)) +
               geom_text(
-                    data = indicador_boi[indicador_boi$data == "2023-08-25", ],
+                    data = indicador_boi[indicador_boi$data == "2023-09-29", ],
                             aes(label = scaleFUN(a_vista_r)),
                             hjust = -0.6,
                             vjust = -0.5,
