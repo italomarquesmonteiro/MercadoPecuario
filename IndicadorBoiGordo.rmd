@@ -19,7 +19,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r} 
-library(conflicted)
 library(tidyverse)
 ```
 
@@ -27,14 +26,13 @@ library(tidyverse)
 readxl::read_xlsx(
   "C:/Users/italo/Downloads/CEPEA_20240103003539.xlsx", skip = 3) |>
   dplyr::mutate(Data = lubridate::dmy(Data)) |>
-  readr::write_csv(
-    "C:/Users/italo/OneDrive/Área de Trabalho/VsCode/cepea/CepeaBoiGordo.csv")
+  janitor::clean_names("snake") |>
+  readr::write_csv("Dataset index/CepeaBoiGordo.csv")
 ```
 
 
 ```{r}
-indicador_boi <- readr::read_csv(
-  "C:/Users/italo/OneDrive/Área de Trabalho/VsCode/cepea/CepeaBoiGordo.csv") |>
+indicador_boi <- readr::read_csv("Dataset index/CepeaBoiGordo.csv") |>
   janitor::clean_names("snake") |>
   dplyr::glimpse()
 ```
