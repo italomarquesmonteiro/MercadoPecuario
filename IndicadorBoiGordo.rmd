@@ -94,4 +94,3 @@ gordo |>
           face = "bold", family = "Fira Sans",size = 8, color = "gray50", angle=60, hjust=1) # nolint
   )
 ```
-
