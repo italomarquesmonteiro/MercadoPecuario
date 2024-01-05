@@ -1,5 +1,5 @@
 ---
-title: "Indicador do Boi Gordo Cepea/B3"
+title: "Indicador do Boi Gordo"
 description: ""
 author script: 
   - name: "Ítalo Marques-Monteiro"
@@ -13,119 +13,85 @@ author script:
 date: "2023-08-18"
 output: html_document
 ---
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 
 ```{r} 
 library(tidyverse)
 ```
 
 ```{r}
-readxl::read_xlsx(
-  "C:/Users/italo/Downloads/CEPEA_20240103003539.xlsx", skip = 3) |>
-  dplyr::mutate(Data = lubridate::dmy(Data)) |>
-  janitor::clean_names("snake") |>
-  readr::write_csv("Dataset index/CepeaBoiGordo.csv")
+praca_sp  <- readr::read_csv("Dataset index/CepeaBoiGordo.csv") |>
+    dplyr::select(-a_vista_us)
 ```
+
 
 
 ```{r}
-indicador_boi <- readr::read_csv("Dataset index/CepeaBoiGordo.csv") |>
-  janitor::clean_names("snake") |>
-  dplyr::glimpse()
+label_title <- "Comportamento do preço do boi gordo na praças de São Paulo e Rio Grande do Sul" # nolint
+label_caption <- "Nota: Os preços do boi gordo no Rio Grande do Sul são precificados em quilo e foram transformados para unidade de medida de @, usando o valor de 15 kg. \nDados do Boi Gordo RS: Núcleo de Estudos em Sistemas de Produção de Bovinos de Corte e Cadeia Produtiva (NESPro-UFRGS) \nDados do Boi Gordo SP:Centro de Estudos Avançados em Economia Aplicada (Cepea-Esalq) \nPlot: @italo.m.m" # nolint
 ```
 
-```{r}
-boi_sp <- indicador_boi |>
-  dplyr::select(-a_vista_us) |>
-  dplyr::filter(data >= "2020-10-27")
-```
 
 
 ```{r}
-scaleFUN <- function(x) format(round(as.numeric(x), 0), nsmall= 0, big.mark = ",")
-
-# Create line chart theme
-theme_swd_line <-   theme(
-  plot.title = element_text(size = rel(1.75), color = "steelblue"), #steelblue
-  plot.margin = margin(20, 20, 20, 20),
-  text = element_text(family = "Roboto", color = "#979797"),
-  axis.title.x = element_text(hjust = 0, vjust = -0.5),
-  axis.title.y = element_blank(),
-  axis.text.y = element_blank(),
-  line = element_blank(),
-  rect = element_blank()
-)
+gordo |>
+    dplyr::rename(preco = variavel) |>
+    dplyr::select(data, preco, pc_macho) |>
+    dplyr::mutate(pc_macho = pc_macho * 15) |>
+    dplyr::full_join(boi_sp) |>
+  tidyr::pivot_longer(
+    !c(data, preco),
+      names_to = "categoria",
+        values_to = "arroba"
+  ) |>
+  dplyr::mutate(
+    categoria = case_when(
+      categoria == "pc_macho" ~ "Boi Gordo RS",
+      categoria == "a_vista_r" ~ "Boi Gordo SP",
+      TRUE ~ categoria
+    )
+  ) |>
+  dplyr::filter(data >= "2020-07-27") |>
+  ggplot2::ggplot(
+    mapping = aes(
+      x = data,
+        y = arroba,
+          color = categoria
+    )
+  ) +
+  geom_smooth(method = "gam") +
+  geom_line(na.rm = TRUE) +
+  labs(
+    title = label_title,
+      x = "Data",
+          color = "Categorias",
+            caption = label_caption
+  ) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y") +
+  scale_y_continuous(breaks = seq(100, 360, 20), labels = scales::dollar_format(
+    prefix = "R$ ", suffix = " @")) +
+  scale_color_manual(values = c(
+    "goldenrod3",
+    "#0072B2"
+    "mediumpurple1"
+    )
+  ) +
+  guides(fill = "none") +
+  theme(
+        plot.title = ggtext::element_markdown(face = "bold", family = "Source Sans Pro", size = 25, hjust = 0, color = "gray40",), # nolint
+        plot.caption = element_text(face = "bold", family = "Fira Sans Pro", size = 12, color = "gray70"), # nolint
+        panel.background = element_rect(fill = "white", color = "grey90"),
+        plot.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey90"),
+        legend.background = element_rect(fill = "white", color = "white"),
+        legend.position = c(0.5, 0.5),
+        legend.key = element_rect(fill = "grey90", color = "grey90"),
+        legend.text = element_text(color = "grey40", size = 12),
+        legend.title = element_text(face = "bold", color = "grey40"),
+        axis.title.x = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 15, hjust = 0, color = "gray50"), # nolint,
+        axis.title.y = element_blank() ,
+        axis.text.y = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 8, hjust = 0, color = "gray50"), # nolint,
+        axis.text.x = ggtext::element_markdown(
+          face = "bold", family = "Fira Sans",size = 8, color = "gray50", angle=60, hjust=1) # nolint
+  )
 ```
 
-```{r}
-indicador_boi |>
-  dplyr::filter(data >= "2023-08-25") |>
-  dplyr::arrange(desc(a_vista_r))
-```
-
-
-```{r}
-indicador_boi |>
-  #dplyr::filter(data >= "2023-08-01") |>
-  ggplot2::ggplot(aes(x = data, y = a_vista_r)) +
-              geom_smooth(method = "gam", se = FALSE) +
-              geom_line(color = "steelblue", size = 1) +
-              geom_col(alpha = 0.9) +
-              scale_x_date(date_breaks = "1 day", date_labels = "%Y-%m-%d") +
-              #scale_y_continuous(limits = c(195, 250, 1)) +
-              theme_swd_line +
-              labs(
-                title = "Indicador @ do Boi Gordo",
-                subtitle = "# Fonte: CEPEA/B3(2023)
-
-                by Ítalo Monteiro",
-                x = "Data"
-              ) +
-              theme(axis.text.x = element_text(size = 10, color = "black",
-                angle = 60, hjust = 1, vjust = 1)) +
-              geom_text(
-                    data = indicador_boi[indicador_boi$data == "2023-09-29", ],
-                            aes(label = scaleFUN(a_vista_r)),
-                            hjust = -0.6,
-                            vjust = -0.5,
-                            size = 5,
-                            color = "steelblue",
-                            fontface = "bold") +
-                annotate("text", label = "R$/@",
-                    x = as.Date(
-                        "2023-08-25"), y = 203, size = 5,
-                          colour = "steelblue", fontface = "bold")
-```
-```{r}
-indicador_boi |>
-  #dplyr::filter(data >= "2020-01-01") |>
-  ggplot2::ggplot(aes(x = data, y = a_vista_r)) +
-              geom_line(color = "black") +
-              geom_smooth(method = "loess", se = FALSE) +
-              scale_x_date(date_breaks = "1 year", date_labels = "%Y-%m-%d") +
-              theme(axis.text.x = element_text(size = 10, color = "black",
-                angle = 60, hjust = 1, vjust = 1)) +
-              theme_swd_line +
-              labs(
-                title = "Indicador @ do Boi Gordo",
-                subtitle = "# Fonte: CEPEA/B3(2023)
-
-                by Ítalo Monteiro",
-                x = "Data"
-              ) +
-              geom_text(
-                    data = indicador_boi[indicador_boi$data == "2023-08-25", ],
-                            aes(label = scaleFUN(a_vista_r)),
-                            hjust = -0.1,
-                            vjust = -0.5,
-                            size = 5,
-                            color = "steelblue",
-                            fontface = "bold") +
-                annotate("text", label = "R$/@",
-                    x = as.Date(
-                        "2023-01-01"), y = 208, size = 5,
-                          colour = "steelblue", fontface = "bold")
-```
