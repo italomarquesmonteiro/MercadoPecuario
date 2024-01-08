@@ -1,0 +1,115 @@
+---
+title: ""
+description: ""
+author script: 
+  - name: "Ítalo Marques-Monteiro"
+    github: https://github.com/italomarquesmonteiro
+    kaggle: https://www.kaggle.com/talomarquesmonteiro
+    linkedin: linkedin.com/in/ítalo-monteiro-0b2516144
+    lattes: http://lattes.cnpq.br/7174985368517137
+    orcid_id: https://orcid.org/0000-0003-4367-1034
+    affiliation: Smart Data
+        
+date: "2024-01-06"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+praca_rs <- readr::read_csv(
+    "c:/Users/italo/OneDrive/Área de Trabalho/GitHub/nespro/Price dataset/GadoGordo.csv" # nolint
+  ) |>
+  dplyr::filter(preco == "Médio") |>
+  dplyr::select(!c(pv_macho, pv_femea)) |>
+  dplyr::mutate(
+    pc_macho = pc_macho * 15,
+    pc_femea = pc_femea * 15
+  )
+
+praca_sp <- readr::read_csv(
+  "c:/Users/italo/OneDrive/Área de Trabalho/GitHub/cepea-esalq/Dataset cepea/CepeaBoiGordo.csv" # nolint
+  ) |>
+  dplyr::select(data, a_vista_r)
+
+
+vaca_sp <- readxl::read_xlsx("c:/Users/italo/OneDrive/Área de Trabalho/VsCode/agrolink/VacaGordaSP.xlsx") |> # nolint
+  tidyr::separate(data, into = c("data", "hora"), " ") |>
+  dplyr::select(!hora) |>
+  dplyr::mutate(data = lubridate::ymd(data))
+```
+
+
+```{r}
+base_gado_gordo <- praca_rs |>
+  dplyr::inner_join(praca_sp) |>
+  #dplyr::full_join(vaca_sp) |>
+  tidyr::pivot_longer(
+    !c(data, preco),
+      names_to = "categoria",
+        values_to = "arroba"
+  ) |>
+  dplyr::mutate(
+    categoria = case_when(
+      categoria == "pc_macho" ~ "Boi Gordo-RS",
+      categoria == "pc_femea" ~ "Vaca Gorda-RS",
+      categoria == "a_vista_r" ~ "Boi Gordo-SP",
+     # categoria == "vaca_groda_sp" ~ "Vaca Gorda-SP"
+
+    )
+  ) |>
+  dplyr::select(!preco) |>
+  dplyr::filter(data >= "2020-10-27")
+```
+
+
+```{r}
+label_title <- "Comportamento da arroba do boi gordo nas praças de São Paulo e Rio Grande do Sul" # nolint
+label_caption <- "Nota:  Valor por arroba de 15 kg. Os valores do preço da arroba são referentes as mesmas datas de divulgação em ambas as praças  \nDados do boi gordo RS: Núcleo de Estudos em Sistemas de Produção de Bovinos de Corte e Cadeia Produtiva (NESPro) \n Dados do boi gordo SP: Centro de Estudos Avançados em Economia Aplicada (Cepea) \nPlot: @italo.m.m" # nolint
+```
+
+
+```{r}
+base_gado_gordo |>
+  dplyr::filter(data > "2020-10-27", categoria %in% c("Boi Gordo-SP", "Boi Gordo-RS")) |> # nolint
+  ggplot2::ggplot(
+    mapping = aes(
+      x = data,
+        y = arroba,
+          color = categoria
+    )
+  ) +
+  geom_line(na.rm = TRUE) +
+  geom_smooth(method = "gam", alpha = 0.18, na.rm = TRUE) +
+  labs(
+    title = label_title,
+      x = "Data",
+          color = "Categorias",
+            caption = label_caption
+  ) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y") +
+  scale_y_continuous(breaks = seq(100, 350, 15), labels = scales::dollar_format(
+    prefix = "", suffix = " R$/@")) +
+  scale_color_manual(values = c("steelblue", "grey70")) +
+  theme(
+        plot.title = ggtext::element_markdown(face = "bold", family = "Source Sans Pro", size = 25, hjust = 0, color = "gray40",), # nolint
+        plot.caption = element_text(face = "bold", family = "Fira Sans Pro", size = 12, color = "gray70"), # nolint
+        panel.background = element_rect(fill = "white", color = "grey90"),
+        plot.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey90"),
+        legend.background = element_blank(),
+        legend.position = c(0.7, 0.8),
+        legend.key = element_rect(fill = "grey95", color = "grey95"),
+        legend.text = element_text(color = "grey40", size = 12),
+        legend.title = element_text(face = "bold", color = "grey40"),
+        axis.title.x = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 15, hjust = 0, color = "gray50"), # nolint,
+        axis.title.y = element_blank() ,
+        axis.text.y = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 8, hjust = 0, color = "gray50"), # nolint,
+        axis.text.x = ggtext::element_markdown(
+          face = "bold", family = "Fira Sans",size = 8, color = "gray50", angle=60, hjust=1) # nolint
+  )
+```
+
+
