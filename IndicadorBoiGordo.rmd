@@ -118,8 +118,8 @@ plot_gado_gordo
 ggsave("Graph index/BoiGordo-RS-SP.png",
   plot = plot_gado_gordo,
     width = 15,
-      height = 10,
-        dpi = 1200
+      height = 9,
+        dpi = 500
   )
 ```
 
