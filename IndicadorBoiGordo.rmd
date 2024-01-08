@@ -45,7 +45,7 @@ vaca_sp <- readxl::read_xlsx("c:/Users/italo/OneDrive/Área de Trabalho/VsCode/a
 ```{r}
 base_gado_gordo <- praca_rs |>
   dplyr::inner_join(praca_sp) |>
-  #dplyr::full_join(vaca_sp) |>
+  #dplyr::inner_join(vaca_sp) |>
   tidyr::pivot_longer(
     !c(data, preco),
       names_to = "categoria",
@@ -56,7 +56,7 @@ base_gado_gordo <- praca_rs |>
       categoria == "pc_macho" ~ "Boi Gordo-RS",
       categoria == "pc_femea" ~ "Vaca Gorda-RS",
       categoria == "a_vista_r" ~ "Boi Gordo-SP",
-     # categoria == "vaca_groda_sp" ~ "Vaca Gorda-SP"
+      #categoria == "vaca_groda_sp" ~ "Vaca Gorda-SP"
 
     )
   ) |>
@@ -72,7 +72,7 @@ label_caption <- "Nota:  Valor por arroba de 15 kg. Os valores do preço da arro
 
 
 ```{r}
-base_gado_gordo |>
+plot_gado_gordo <- base_gado_gordo |>
   dplyr::filter(data > "2020-10-27", categoria %in% c("Boi Gordo-SP", "Boi Gordo-RS")) |> # nolint
   ggplot2::ggplot(
     mapping = aes(
@@ -110,6 +110,16 @@ base_gado_gordo |>
         axis.text.x = ggtext::element_markdown(
           face = "bold", family = "Fira Sans",size = 8, color = "gray50", angle=60, hjust=1) # nolint
   )
+plot_gado_gordo
 ```
 
+
+```{r}
+ggsave("Graph index/BoiGordo-RS-SP.png",
+  plot = plot_gado_gordo,
+    width = 15,
+      height = 10,
+        dpi = 1200
+  )
+```
 
