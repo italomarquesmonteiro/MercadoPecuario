@@ -1,0 +1,46 @@
+---
+title: "Relação de troca do boi gordo"
+description: "A relação de troca do boi gordo é um indicador crucial na pecuária, destacando a proporção entre o preço de venda do boi gordo e o custo de aquisição de outros produtos, como gado de reposição. Essa métrica não apenas sinaliza a viabilidade econômica da transição entre fases do ciclo pecuário, mas também indica a capacidade do pecuarista em adquirir animais de reposição ou investir em outros insumos essenciais para a produção. Uma relação de troca favorável sugere uma maior capacidade de compra, enquanto uma relação desfavorável pode impactar as decisões estratégicas do pecuarista em termos de retenção, venda ou investimento no seu rebanho."
+author script: 
+  - name: "Ítalo Marques-Monteiro"
+    github: https://github.com/italomarquesmonteiro
+    kaggle: https://www.kaggle.com/talomarquesmonteiro
+    linkedin: linkedin.com/in/italomarquesmonteiro
+    medium: https://medium.com/@italomarquesmonteiro
+    lattes: http://lattes.cnpq.br/7174985368517137
+    orcid_id: https://orcid.org/0000-0003-4367-1034
+    affiliation: Smart Data
+        
+date: "2024-01-26"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+boi_rs <- readr::read_csv(
+    "c:/Users/italo/OneDrive/Área de Trabalho/GitHub/nespro/Price dataset/GadoGordo.csv" # nolint
+  ) |>
+  dplyr::filter(preco == "Médio") |>
+  dplyr::select(!c(pc_macho, pc_femea, pv_femea))
+
+
+bezerro_rs <- readr::read_csv(
+  "c:/Users/italo/OneDrive/Área de Trabalho/GitHub/nespro/Price dataset/GadoReposição.csv" # nolint
+  ) |>
+  dplyr::select(data, preco, terneiro_6_12_m) |>
+  dplyr::filter(preco == "Médio")
+```
+
+A fórmula para usada calcular a relação de troca da @ boi gordo é:
+  **Relação de troca** = *Preço da @ boi grodo / Preço do bezerro*
+
+```{r}
+
+```
+
+```{r}
+
+```
