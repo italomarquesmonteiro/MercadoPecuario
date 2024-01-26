@@ -1,0 +1,108 @@
+---
+title: "Ágio do Bezerro"
+description: "O ágio do bezerro é um indicador valioso que orienta os produtores na tomada de decisões embasadas, contribuindo para operações mais rentáveis e sustentáveis no agronegócio."
+author script: 
+  - name: "Ítalo Marques-Monteiro"
+    github: https://github.com/italomarquesmonteiro
+    kaggle: https://www.kaggle.com/talomarquesmonteiro
+    linkedin: linkedin.com/in/ítalo-monteiro-0b2516144
+    lattes: http://lattes.cnpq.br/7174985368517137
+    orcid_id: https://orcid.org/0000-0003-4367-1034
+    affiliation: Smart Data
+        
+date: "2024-01-23"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+boi_rs <- readr::read_csv(
+    "c:/Users/italo/OneDrive/Área de Trabalho/GitHub/nespro/Price dataset/GadoGordo.csv" # nolint
+  ) |>
+  dplyr::filter(preco == "Médio") |>
+  dplyr::select(!c(pc_macho, pc_femea, pv_femea))
+
+
+bezerro_rs <- readr::read_csv(
+  "c:/Users/italo/OneDrive/Área de Trabalho/GitHub/nespro/Price dataset/GadoReposição.csv" # nolint
+  ) |>
+  dplyr::select(data, preco, terneiro_6_12_m) |>
+  dplyr::filter(preco == "Médio")
+```
+
+A fórmula básica para calcular o ágio do bezerro é:
+  **Ágio do Bezerrro** = *{[(Preço do bezerro - Preço do boi) / Preço do boi] * 100}*
+
+```{r}
+agio_do_bezerro_rs <- boi_rs |>
+    dplyr::full_join(bezerro_rs) |>
+    dplyr::rename(
+      boi = pv_macho,
+        bezerro = terneiro_6_12_m
+  ) |>
+  dplyr::mutate(
+    agio = (((bezerro - boi) / boi) * 100),
+      media_movel_agio = zoo::rollmean(
+        agio,
+          k = 30,
+            fill = NA,
+              na.rm = TRUE
+      )
+  ) |>
+  #tidyr::pivot_longer(
+  #  !c(data, preco, agio),
+  #    names_to = "category",
+  #      values_to = "value"
+  #) |>
+  print(n = 20)
+```
+
+```{r}
+agio_do_bezerro_rs |>
+  dplyr::mutate(media_periodo_agio = mean(agio, na.rm = TRUE))
+```
+
+
+```{r}
+label_title <- "Comportamento do ágio do bezerro no Rio Grande do Sul" # nolint
+label_caption <- "Nota: Linha tracejada cinza representa o valor médio do período. \nOs valores do preço da arroba são referentes as mesmas datas de divulgação em ambas as praças  \nDados do boi gordo RS: Núcleo de Estudos em Sistemas de Produção de Bovinos de Corte e Cadeia Produtiva (NESPro) \nPlot: @italo.m.m" # nolint
+```
+
+
+```{r}
+agio_do_bezerro_rs |>
+  ggplot(aes(x = data, y = agio)) +
+    #geom_line(aes(y = agio), color = "grey40", size = 1.5) +
+    geom_smooth(method = "gam") +
+    geom_hline(yintercept = 30, lty = 2, color = "red") +
+    geom_hline(yintercept = 14.5, lty = 2, color = "grey20") +
+    scale_x_date(date_breaks = "1 month", date_labels = "%b %Y") +
+    scale_y_continuous(breaks = seq(0, 40, 5), labels = scales::dollar_format(
+    prefix = "", suffix = "%")) +
+    labs(
+    title = label_title,
+      x = "Data",
+        caption = label_caption
+  ) +
+  theme(
+        plot.title = ggtext::element_markdown(face = "bold", family = "Source Sans Pro", size = 25, hjust = 0, color = "gray40",), # nolint
+        plot.caption = element_text(face = "bold", family = "Fira Sans Pro", size = 12, color = "gray70"), # nolint
+        panel.background = element_rect(fill = "white", color = "grey90"),
+        plot.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey90"),
+        legend.background = element_blank(),
+        legend.position = c(0.7, 0.8),
+        legend.key = element_rect(fill = "grey95", color = "grey95"),
+        legend.text = element_text(color = "grey40", size = 12),
+        legend.title = element_text(face = "bold", color = "grey40"),
+        axis.title.x = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 15, hjust = 0, color = "gray50"), # nolint,
+        axis.title.y = element_blank() ,
+        axis.text.y = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 8, hjust = 0, color = "gray50"), # nolint,
+        axis.text.x = ggtext::element_markdown(
+          face = "bold", family = "Fira Sans",size = 8, color = "gray50", angle=60, hjust=1) # nolint
+  )
+
+```
