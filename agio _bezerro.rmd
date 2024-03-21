@@ -76,9 +76,20 @@ label_caption <- "Nota: Linha tracejada cinza representa o valor médio do perí
 bg <- "white"
 txt_col <- "black"
 
+font <- "Josefin Sans"
+font2 <- "Open Sans"
+
+# Use the font_add_google() function to load fonts from the web
+sysfonts::font_add_google(family = font, font, db_cache = FALSE)
+sysfonts::font_add_google(family = font2, font2, db_cache = FALSE)
+
 sysfonts::font_add(family = "Font Awesome 6 Brands", regular = "C:/Users/italo/AppData/Local/Microsoft/Windows/Fonts/Font Awesome 6 Brands-Regular-400.otf") # nolint
-showtext::showtext_auto()
+
+theme_set(theme_minimal(base_family = font2, base_size = 3))
+
 showtext::showtext_opts(dpi = 300)
+showtext::showtext_auto(enable = TRUE)
+
 
 github_icon <- "&#xf09b"
 linkedin_icon <- "&#xf0e1"
@@ -129,8 +140,8 @@ agio <- agio_do_bezerro_rs |>
         caption = caption_text
   ) +
   theme(
-        plot.title = ggtext::element_markdown(face = "bold", family = "Source Sans Pro", size = 25, hjust = 0, color = "gray40",), # nolint
-        plot.caption = ggtext::element_markdown(hjust = 0, margin = margin(10,0,0,0), size = 8, color = txt_col, lineheight = 1.2), # nolint
+        plot.title = ggtext::element_markdown(face = "bold", family = font, size = 25, hjust = 0, color = "gray40",), # nolint
+        plot.caption = ggtext::element_markdown(family = font, hjust = 0, margin = margin(10,0,0,0), size = 8, color = txt_col, lineheight = 1.2), # nolint
         panel.background = element_rect(fill = "white", color = "grey90"),
         plot.background = element_rect(fill = "white"),
         panel.grid = element_line(color = "grey90"),
@@ -139,11 +150,11 @@ agio <- agio_do_bezerro_rs |>
         legend.key = element_rect(fill = "grey95", color = "grey95"),
         legend.text = element_text(color = "grey40", size = 12),
         legend.title = element_text(face = "bold", color = "grey40"),
-        axis.title.x = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 15, hjust = 0, color = "gray50"), # nolint,
-        axis.title.y = element_blank() ,
-        axis.text.y = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 8, hjust = 0, color = "gray50"), # nolint,
+        axis.title.x = ggtext::element_markdown(face = "bold", family = font,size = 15, hjust = 0, color = "gray50"), # nolint,
+        axis.title.y = element_blank(),
+        axis.text.y = ggtext::element_markdown(face = "bold", family = font2,size = 8, hjust = 0, color = "gray50"), # nolint,
         axis.text.x = ggtext::element_markdown(
-          face = "bold", family = "Fira Sans",size = 8, color = "gray50", angle=60, hjust=1) # nolint
+          face = "bold", family = font2 ,size = 8, color = "gray50", angle=60, hjust=1) # nolint
   )
 agio
 ```
