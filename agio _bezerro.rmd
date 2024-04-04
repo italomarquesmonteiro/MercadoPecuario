@@ -123,6 +123,8 @@ caption_text <- glue::glue(
 media do periodo 
 2024-01-31: 14.5
 2024-03-13: 14.8
+2024-04-03: 14.9
+
 
 ```{r}
 agio <- agio_do_bezerro_rs |>
