@@ -20,10 +20,10 @@ library(tidyverse)
 ```
 
 ```{r Datasets}
-bezerro <- readr::read_csv("c:/Users/italo/OneDrive/Área de Trabalho/GitHub/cepea-esalq/Dataset cepea/CalfPrice.csv") |> # nolint
+bezerro <- readr::read_csv("c:/Users/italo/OneDrive/Área de Trabalho/GitHub/Cepea-Esalq/.vscode/Dataset cepea/CalfPrice.csv") |> # nolint
   dplyr::select(data, preco_bezerro = a_vista_r)
 
-boi <- readr::read_csv("C:/Users/italo/OneDrive/Área de Trabalho/GitHub/cepea-esalq/Dataset cepea/CepeaBoiGordo.csv" ) |> # nolint 
+boi <- readr::read_csv("c:/Users/italo/OneDrive/Área de Trabalho/GitHub/Cepea-Esalq/.vscode/Dataset cepea/CepeaBoiGordo.csv" ) |> # nolint 
   dplyr::select(data, arroba_boi = a_vista_r)
 ```
 
@@ -51,9 +51,51 @@ relacao_troca |> #arrange(desc(rt_medio))
   dplyr::mutate(media_periodo = mean(rt_medio))
 ```
 
-```{r title and caption}
-label_title <- "@ de boi gordo necessária para comprar um bezerro" # nolint
-label_caption <- "Plot: @italo.m.m \nNota: Linha tracejada representa o valor médio do período.  \nDados: Centro de Estudos Avançados em Economia Aplicada (Cepea)" # nolint
+
+```{r}
+bg <- "white"
+txt_col <- "black"
+
+font <- "Josefin Sans"
+font2 <- "Open Sans"
+
+# Use the font_add_google() function to load fonts from the web
+sysfonts::font_add_google(family = font, font, db_cache = FALSE)
+sysfonts::font_add_google(family = font2, font2, db_cache = FALSE)
+
+sysfonts::font_add(family = "Font Awesome 6 Brands", regular = "C:/Users/italo/AppData/Local/Microsoft/Windows/Fonts/Font Awesome 6 Brands-Regular-400.otf") # nolint
+
+theme_set(theme_minimal(base_family = font2, base_size = 3))
+
+showtext::showtext_opts(dpi = 300)
+showtext::showtext_auto(enable = TRUE)
+
+
+github_icon <- "&#xf09b"
+linkedin_icon <- "&#xf0e1"
+x_icon <- "&#xf099"
+instagram_icon <- "&#xf16d"
+github_username <- "italomarquesmonteiro"
+linkedin_username <- "italomarquesmonteiro"
+x_username <- "italommonteiro"
+instagram_username <- "italo.m.m"
+
+colors <- "gray40"
+title_text <- glue::glue("@ de boi gordo necessária para comprar um bezerro") # nolint
+subtitle_text <- glue::glue("")
+caption_text <- glue::glue(
+  "**Dados:** Centro de Estudos Avançados em Economia Aplicada (Cepea-Esalq)<br>", # nolint
+  "**Nota:** Linha tracejada cinza representa o valor médio do período<br>",
+  "**Plot:** Ítalo Marques-Monteiro <br><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: black;'>{github_icon};</span> 
+  <span style='color: black'>{github_username}</span><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: dodgerblue4;'>{linkedin_icon};</span> 
+  <span style='color: black'>{linkedin_username}</span><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: steelblue;'>{x_icon};</span>
+  <span style='color: black'>{x_username}</span><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: red;'>{instagram_icon};</span>
+  <span style='color: black'>{instagram_username}</span>"
+)
 ```
   
   
@@ -66,10 +108,31 @@ plot_relacao_troca <- relacao_troca |>
   geom_hline(yintercept = 6.61, lty = 3) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(breaks = seq(0, 12, 1), labels = scales::dollar_format(prefix = "", suffix = "@")) + # nolint
-  labs(title = label_title, caption = label_caption) +
+  #labs(title = label_title, caption = label_caption) +
+  #theme(
+  #      plot.title = ggtext::element_markdown(face = "bold", family = "Source Sans Pro", size = 25, hjust = 0, color = "grey40",), # nolint
+  #      plot.caption = element_text(face = "bold", family = "Fira Sans Pro", size = 12, color = "gray70"), # nolint
+  #      panel.background = element_rect(fill = "white", color = "grey90"),
+  #      plot.background = element_rect(fill = "white"),
+  #      panel.grid = element_line(color = "grey90"),
+  #      legend.background = element_blank(),
+  #      legend.position = c(0.7, 0.8),
+  #      legend.key = element_rect(fill = "grey95", color = "grey95"),
+  #      legend.text = element_text(color = "grey40", size = 12),
+  #      legend.title = element_text(face = "bold", color = "grey40"),
+  #      axis.title.x = element_blank(),
+  #      axis.title.y = element_blank(),
+  #      axis.text.y = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 8, hjust = 0, color = "gray50"), # nolint,
+  #      axis.text.x = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 8, color = "gray50", angle = 90, hjust = 1, vjust = 1) # nolint
+  #)
+  labs(
+    title = title_text,
+      x = "Data",
+        caption = caption_text
+  ) +
   theme(
-        plot.title = ggtext::element_markdown(face = "bold", family = "Source Sans Pro", size = 25, hjust = 0, color = "grey40",), # nolint
-        plot.caption = element_text(face = "bold", family = "Fira Sans Pro", size = 12, color = "gray70"), # nolint
+        plot.title = ggtext::element_markdown(face = "bold", family = font, size = 25, hjust = 0, color = "gray40",), # nolint
+        plot.caption = ggtext::element_markdown(family = font, hjust = 0, margin = margin(10,0,0,0), size = 8, color = txt_col, lineheight = 1.2), # nolint
         panel.background = element_rect(fill = "white", color = "grey90"),
         plot.background = element_rect(fill = "white"),
         panel.grid = element_line(color = "grey90"),
@@ -78,14 +141,15 @@ plot_relacao_troca <- relacao_troca |>
         legend.key = element_rect(fill = "grey95", color = "grey95"),
         legend.text = element_text(color = "grey40", size = 12),
         legend.title = element_text(face = "bold", color = "grey40"),
-        axis.title.x = element_blank(),
+        axis.title.x = ggtext::element_markdown(face = "bold", family = font,size = 15, hjust = 0, color = "gray50"), # nolint,
         axis.title.y = element_blank(),
-        axis.text.y = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 8, hjust = 0, color = "gray50"), # nolint,
-        axis.text.x = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 8, color = "gray50", angle = 90, hjust = 1, vjust = 1) # nolint
+        axis.text.y = ggtext::element_markdown(face = "bold", family = font2,size = 8, hjust = 0, color = "gray50"), # nolint,
+        axis.text.x = ggtext::element_markdown(
+          face = "bold", family = font2 ,size = 8, color = "gray50", angle=60, hjust=1) # nolint
   )
 plot_relacao_troca
 ```
 
 ```{r}
-ggsave("Graph index/RelaçãoTroca.png", plot = plot_relacao_troca, dpi = 300)
+ggsave(".vscode/Graph index/RelaçãoTroca.png", plot = plot_relacao_troca, dpi = 300)
 ```

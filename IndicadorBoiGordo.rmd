@@ -20,7 +20,7 @@ library(tidyverse)
 
 ```{r}
 praca_rs <- readr::read_csv(
-    "c:/Users/italo/OneDrive/Área de Trabalho/GitHub/nespro/Price dataset/GadoGordo.csv" # nolint
+    "c:/Users/italo/OneDrive/Área de Trabalho/GitHub/NESPro/.vscode/Dataset/GadoGordo.csv" # nolint
   ) |>
   dplyr::filter(preco == "Médio") |>
   dplyr::select(!c(pv_macho, pv_femea)) |>
@@ -30,15 +30,15 @@ praca_rs <- readr::read_csv(
   )
 
 praca_sp <- readr::read_csv(
-  "c:/Users/italo/OneDrive/Área de Trabalho/GitHub/cepea-esalq/Dataset cepea/CepeaBoiGordo.csv" # nolint
+  "c:/Users/italo/OneDrive/Área de Trabalho/GitHub/Cepea-Esalq/.vscode/Dataset cepea/CepeaBoiGordo.csv" # nolint
   ) |>
   dplyr::select(data, a_vista_r)
 
 
-vaca_sp <- readxl::read_xlsx("c:/Users/italo/OneDrive/Área de Trabalho/VsCode/agrolink/VacaGordaSP.xlsx") |> # nolint
-  tidyr::separate(data, into = c("data", "hora"), " ") |>
-  dplyr::select(!hora) |>
-  dplyr::mutate(data = lubridate::ymd(data))
+#vaca_sp <- readxl::read_xlsx("c:/Users/italo/OneDrive/Área de Trabalho/VsCode/agrolink/VacaGordaSP.xlsx") |> # nolint
+#  tidyr::separate(data, into = c("data", "hora"), " ") |>
+#  dplyr::select(!hora) |>
+#  dplyr::mutate(data = lubridate::ymd(data))
 ```
 
 
@@ -70,6 +70,52 @@ label_title <- "Comportamento da arroba do boi gordo nas praças de São Paulo e
 label_caption <- "Nota:  Valor por arroba de 15 kg. Os valores do preço da arroba são referentes as mesmas datas de divulgação em ambas as praças  \nDados do boi gordo RS: Núcleo de Estudos em Sistemas de Produção de Bovinos de Corte e Cadeia Produtiva (NESPro) \n Dados do boi gordo SP: Centro de Estudos Avançados em Economia Aplicada (Cepea) \nPlot: @italo.m.m" # nolint
 ```
 
+```{r}
+bg <- "white"
+txt_col <- "black"
+
+font <- "Josefin Sans"
+font2 <- "Open Sans"
+
+# Use the font_add_google() function to load fonts from the web
+sysfonts::font_add_google(family = font, font, db_cache = FALSE)
+sysfonts::font_add_google(family = font2, font2, db_cache = FALSE)
+
+sysfonts::font_add(family = "Font Awesome 6 Brands", regular = "C:/Users/italo/AppData/Local/Microsoft/Windows/Fonts/Font Awesome 6 Brands-Regular-400.otf") # nolint
+
+theme_set(theme_minimal(base_family = font2, base_size = 3))
+
+showtext::showtext_opts(dpi = 300)
+showtext::showtext_auto(enable = TRUE)
+
+
+github_icon <- "&#xf09b"
+linkedin_icon <- "&#xf0e1"
+x_icon <- "&#xf099"
+instagram_icon <- "&#xf16d"
+github_username <- "italomarquesmonteiro"
+linkedin_username <- "italomarquesmonteiro"
+x_username <- "italommonteiro"
+instagram_username <- "italo.m.m"
+
+colors <- "gray40"
+title_text <- glue::glue('Comportamento da arroba do boi gordo nas praças de São Paulo e Rio Grande do Sul') # nolint
+subtitle_text <- glue::glue("")
+caption_text <- glue::glue(
+  "**Dados:** Núcleo de Estudos em Sistemas de Produção de Bovinos de Corte e Cadeia Produtiva (NESPro) e Centro de Estudos Avançados em Economia Aplicada (Cepea-Esalq)<br>", # nolint
+  "**Nota:** Nota:  Valor por arroba de 15 kg. Os valores do preço da arroba são referentes as mesmas datas de divulgação em ambas as praças<br>",
+  "**Plot:** Ítalo Marques-Monteiro <br><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: black;'>{github_icon};</span> 
+  <span style='color: black'>{github_username}</span><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: dodgerblue4;'>{linkedin_icon};</span> 
+  <span style='color: black'>{linkedin_username}</span><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: steelblue;'>{x_icon};</span>
+  <span style='color: black'>{x_username}</span><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: red;'>{instagram_icon};</span>
+  <span style='color: black'>{instagram_username}</span>"
+)
+```
+
 
 ```{r}
 plot_gado_gordo <- base_gado_gordo |>
@@ -83,19 +129,19 @@ plot_gado_gordo <- base_gado_gordo |>
   ) +
   geom_line(na.rm = TRUE) +
   geom_smooth(method = "gam", alpha = 0.18, na.rm = TRUE) +
-  labs(
-    title = label_title,
-      x = "Data",
-          color = "Categorias",
-            caption = label_caption
-  ) +
   scale_x_date(date_breaks = "1 month", date_labels = "%b %Y") +
   scale_y_continuous(breaks = seq(100, 350, 15), labels = scales::dollar_format(
     prefix = "", suffix = " R$/@")) +
   scale_color_manual(values = c("steelblue", "grey70")) +
+  labs(
+    title = title_text,
+      x = "Data",
+      caption = caption_text,
+      color = ""
+  ) +
   theme(
-        plot.title = ggtext::element_markdown(face = "bold", family = "Source Sans Pro", size = 25, hjust = 0, color = "gray40",), # nolint
-        plot.caption = element_text(face = "bold", family = "Fira Sans Pro", size = 12, color = "gray70"), # nolint
+        plot.title = ggtext::element_markdown(face = "bold", family = font, size = 25, hjust = 0, color = "gray40",), # nolint
+        plot.caption = ggtext::element_markdown(family = font, hjust = 0, margin = margin(10,0,0,0), size = 8, color = txt_col, lineheight = 1.2), # nolint
         panel.background = element_rect(fill = "white", color = "grey90"),
         plot.background = element_rect(fill = "white"),
         panel.grid = element_line(color = "grey90"),
@@ -103,19 +149,19 @@ plot_gado_gordo <- base_gado_gordo |>
         legend.position = c(0.7, 0.8),
         legend.key = element_rect(fill = "grey95", color = "grey95"),
         legend.text = element_text(color = "grey40", size = 12),
-        legend.title = element_text(face = "bold", color = "grey40"),
-        axis.title.x = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 15, hjust = 0, color = "gray50"), # nolint,
-        axis.title.y = element_blank() ,
-        axis.text.y = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 8, hjust = 0, color = "gray50"), # nolint,
+        legend.title = element_text(face = "bold", color = "grey40", size = 12),
+        axis.title.x = ggtext::element_markdown(face = "bold", family = font,size = 15, hjust = 0, color = "gray50"), # nolint,
+        axis.title.y = element_blank(),
+        axis.text.y = ggtext::element_markdown(face = "bold", family = font2,size = 8, hjust = 0, color = "gray50"), # nolint,
         axis.text.x = ggtext::element_markdown(
-          face = "bold", family = "Fira Sans",size = 8, color = "gray50", angle=60, hjust=1) # nolint
+          face = "bold", family = font2 ,size = 8, color = "gray50", angle=60, hjust=1) # nolint
   )
 plot_gado_gordo
 ```
 
 
 ```{r}
-ggsave("Graph index/BoiGordo-RS-SP.png",
+ggsave(".vscode/Graph index/BoiGordo-RS-SP.png",
   plot = plot_gado_gordo,
     width = 15,
       height = 9,
