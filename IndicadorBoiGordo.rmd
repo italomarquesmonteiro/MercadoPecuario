@@ -61,7 +61,7 @@ base_gado_gordo <- praca_rs |>
     )
   ) |>
   dplyr::select(!preco) |>
-  dplyr::filter(data >= "2020-10-27")
+  dplyr::filter(data >= "2015-05-27")  # 2020-10-27
 ```
 
 
@@ -119,7 +119,7 @@ caption_text <- glue::glue(
 
 ```{r}
 plot_gado_gordo <- base_gado_gordo |>
-  dplyr::filter(data > "2020-10-27", categoria %in% c("Boi Gordo-SP", "Boi Gordo-RS")) |> # nolint
+  dplyr::filter(data > "2015-05-27", categoria %in% c("Boi Gordo-SP", "Boi Gordo-RS")) |> # nolint
   ggplot2::ggplot(
     mapping = aes(
       x = data,
@@ -146,7 +146,7 @@ plot_gado_gordo <- base_gado_gordo |>
         plot.background = element_rect(fill = "white"),
         panel.grid = element_line(color = "grey90"),
         legend.background = element_blank(),
-        legend.position = c(0.7, 0.8),
+        legend.position = c(0.5, 0.8),
         legend.key = element_rect(fill = "grey95", color = "grey95"),
         legend.text = element_text(color = "grey40", size = 12),
         legend.title = element_text(face = "bold", color = "grey40", size = 12),
