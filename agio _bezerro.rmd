@@ -20,14 +20,14 @@ library(tidyverse)
 
 ```{r}
 boi_rs <- readr::read_csv(
-    "c:/Users/italo/OneDrive/Área de Trabalho/GitHub/NESPro/.vscode/Dataset/GadoGordo.csv" # nolint
+    "c:/Users/italo/Desktop/GitHub/NESPro/.vscode/Dataset/GadoGordo.csv" # nolint
   ) |>
   dplyr::filter(preco == "Médio") |>
   dplyr::select(!c(pc_macho, pc_femea, pv_femea))
 
 
 bezerro_rs <- readr::read_csv(
-  "c:/Users/italo/OneDrive/Área de Trabalho/GitHub/NESPro/.vscode/Dataset/GadoReposição.csv" # nolint
+  "c:/Users/italo/Desktop/GitHub/NESPro/.vscode/Dataset/GadoReposição.csv" # nolint
   ) |>
   dplyr::select(data, preco, terneiro_6_12_m) |>
   dplyr::filter(preco == "Médio")
@@ -124,6 +124,7 @@ media do periodo
 2024-01-31: 14.5
 2024-03-13: 14.8
 2024-04-03: 14.9
+2024-04-25: 15.0
 
 
 ```{r}
@@ -132,7 +133,7 @@ agio <- agio_do_bezerro_rs |>
     #geom_line(aes(y = agio), color = "grey40", size = 1.5) +
     geom_smooth(method = "gam") +
     geom_hline(yintercept = 30, lty = 1, color = "red") +
-    geom_hline(yintercept = 14.8, lty = 3, color = "grey20") +
+    geom_hline(yintercept = 15, lty = 3, color = "grey20") +
     scale_x_date(date_breaks = "1 month", date_labels = "%b %Y") +
     scale_y_continuous(breaks = seq(0, 40, 5), labels = scales::dollar_format(
     prefix = "", suffix = "%")) +
