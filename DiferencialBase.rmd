@@ -1,0 +1,64 @@
+---
+title: "Diferencial de base do boi gordo"
+description: ""
+author script: "Ítalo Marques-Monteiro"
+date: "2024-04-26"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+praca_rs <- readr::read_csv(
+    "c:/Users/italo/Desktop/GitHub/NESPro/.vscode/Dataset/GadoGordo.csv"
+  ) |>
+  dplyr::filter(preco == "Médio") |>
+  dplyr::select(!c(pv_macho, pv_femea, pc_femea), boi_rs = pc_macho) |>
+  dplyr::mutate(
+    boi_rs = boi_rs * 15,
+    #pc_femea = pc_femea * 15
+  ) |> dplyr::select(-preco)
+
+praca_sp <- readr::read_csv(
+  "c:/Users/italo/Desktop/GitHub/Cepea-Esalq/.vscode/Dataset cepea/CepeaBoiGordo.csv" # nolint
+  ) |>
+  dplyr::select(data, boi_sp = a_vista_r)
+```
+
+```{r}	
+dfb_boi <- praca_rs |> 
+  dplyr::inner_join(praca_sp) |>
+  dplyr::mutate(
+    diferencial_base = boi_sp - boi_rs,
+    mm_dfb = zoo::rollmean(
+        diferencial_base,
+          k = 15,
+            fill = NA,
+              na.rm = TRUE
+      )
+    ) 
+
+var_dfb_boi <- dfb_boi |>
+    dplyr::mutate(
+        ano = lubridate::year(data),
+        mes = lubridate::month(data),
+        .before = boi_rs
+    ) |>
+    dplyr::group_by(ano, mes) |>
+    dplyr::summarise(var_dfb = mean(diferencial_base / boi_sp)*100) |>
+    #dplyr::filter(ano >= 2023) |>
+    ggplot(aes(mes, var_dfb)) +
+    geom_col()  
+   
+    
+dfb_boi |>
+  ggplot(aes(data, var_dfb)) +
+  geom_col() +
+  #geom_smooth(method = "gam") +
+  #geom_hline(yintercept = 0, lty = 3) +
+  #geom_line(color = "dodgerblue4", linewidth = 1) +
+  theme_bw()
+
+``` 
