@@ -1,0 +1,131 @@
+---
+
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+vbp <- tibble::tribble(
+  ~estado, ~produto, ~valor,
+  "Rio Grande do Sul", "Arroz", 68.5,
+  "Rio Grande do Sul", "Trigo", 44.4,
+  "Rio Grande do Sul", "Soja", 15.4,
+  "Rio Grande do Sul", "B. Leite", 10.7,
+  "Rio Grande do Sul", "B. Corte", 4.6
+)
+```
+
+```{r}
+font <- "Josefin Sans"
+font2 <- "Open Sans"
+sysfonts::font_add_google(family=font, font, db_cache = FALSE)
+sysfonts::font_add_google(family=font2, font2, db_cache = FALSE)
+sysfonts::font_add(family = "Font Awesome 6 Brands", regular = "C:/Users/italo/AppData/Local/Microsoft/Windows/Fonts/Font Awesome 6 Brands-Regular-400.otf") # nolint
+#theme_set(theme_minimal(base_family = font2, base_size = 3))
+showtext::showtext_opts(dpi = 300)
+showtext::showtext_auto(enable = TRUE)
+```
+
+```{r}
+bg <- "white"
+txt_col <- "black"
+font <- "Josefin Sans"
+font2 <- "Open Sans"
+sysfonts::font_add_google(family = font, font, db_cache = FALSE)
+sysfonts::font_add_google(family = font2, font2, db_cache = FALSE)
+sysfonts::font_add(family = "Font Awesome 6 Brands", regular = "C:/Users/italo/AppData/Local/Microsoft/Windows/Fonts/Font Awesome 6 Brands-Regular-400.otf") # nolint
+showtext::showtext_opts(dpi = 300)
+showtext::showtext_auto(enable = TRUE)
+github_icon <- "&#xf09b"
+linkedin_icon <- "&#xf0e1"
+x_icon <- "&#xf099"
+instagram_icon <- "&#xf16d"
+github_username <- "italomarquesmonteiro"
+linkedin_username <- "italomarquesmonteiro"
+x_username <- "italommonteiro"
+instagram_username <- "italo.m.m"
+colors <- "gray40"
+title_text <- glue::glue("Participação do Rio Grande do Sul no VBP") # nolint
+subtitle_text <- glue::glue("O valor bruto da produção (VBP) reflete o<br>desempenho do agronegócio ao longo do<br>ano, considerando a produção e os preços<br>recebidos pelos produtores<br>",
+  "<span style='font-size: 12px;'></span>")
+caption_text <- glue::glue(
+    #"**Nota:** Linha tracejada cinza representa segmentação do 1º e 2º turno do presidente.<br>",
+    "**Dados:**  Ministério da Agricultura e Pecuariária (até março de 2024)<br>", # nolint
+    #"**Nota:** Linha tracejada cinza representa segmentação do 1º e 2º turno do presidente.<br>",
+    "**Plot:** Ítalo Marques-Monteiro <br><br>",
+    "<span style='font-family:\"Font Awesome 6 Brands\"; color: black;'>{github_icon};</span> 
+    <span style='color: black'>{github_username}</span><br>",
+    "<span style='font-family:\"Font Awesome 6 Brands\"; color: dodgerblue4;'>{linkedin_icon};</span> 
+    <span style='color: black'>{linkedin_username}</span><br>",
+    "<span style='font-family:\"Font Awesome 6 Brands\"; color: steelblue;'>{x_icon};</span>
+    <span style='color: black'>{x_username}</span><br>",
+    "<span style='font-family:\"Font Awesome 6 Brands\"; color: red;'>{instagram_icon};</span>
+    <span style='color: black'>{instagram_username}</span>"
+)
+```
+
+
+```{r}
+vbp <- vbp |>
+  arrange(desc(valor))
+order_produtos <- c("Arroz", "Trigo", "Soja", "B. Leite", "B. Corte")
+
+pal <- c(
+         "#665191",
+         "#a05195",
+         "#d45087",
+         "#f95d6a",
+         "#ff7c43"
+)
+
+grafico_vbp <- vbp |>
+    ggplot(aes(x = factor(produto, levels = order_produtos), y = valor)) +
+    geom_col(fill = pal, color = "grey50", width = 0.5, linewidth = 1) +
+    geom_text(aes(label = paste0(valor, " %")),
+        position = position_dodge(0.9),
+        family = font,
+        fontface = "bold",
+        size = 4,
+        color = "gray40",
+        vjust = -1,
+        hjust = 0.5
+        ) +
+    labs(
+        title = title_text,
+       # x = "Produto",
+        caption = caption_text,
+        subtitle = subtitle_text,
+        color = ""
+    ) +
+    theme(
+        plot.title = ggtext::element_markdown(face = "bold", family = font, size = 25, hjust = 0, color = "gray40",), # nolint
+        plot.caption = ggtext::element_markdown(family = font, hjust = 0, margin = margin(10,0,0,0), size = 8, color = txt_col, lineheight = 1.2), # nolint
+        plot.subtitle = ggtext::element_markdown(face = "bold", family = font, size = 15, hjust = 0, color = "gray40",),
+        panel.background = element_rect(fill = "white", color = "grey90"),
+        plot.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(color = "grey90", size = 0.3),
+        panel.grid = element_line(color = "white"),
+        legend.background = element_blank(),
+        legend.position = c(0.5, 0.8),
+        legend.key = element_rect(fill = "grey95", color = "grey95"),
+        legend.text = element_text(color = "grey40", size = 12),
+        legend.title = element_text(face = "bold", color = "grey40", size = 12),
+        axis.title.x = element_blank(),
+        #axis.title.x = ggtext::element_markdown(face = "bold", family = font,size = 15, hjust = 0, color = "gray50"), # nolint,
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        #axis.text.y = ggtext::element_markdown(face = "bold", family = font2, size = 10, hjust = 0, color = "gray50"), # nolint,
+        axis.text.x = ggtext::element_markdown(
+          face = "bold", family = font2 , size = 10, color = "gray50", angle = 0, hjust = 0.5),# nolint
+        axis.line.x = element_line(linewidth = .75, color = "grey60"),
+        axis.ticks.x = element_line(color = "gray50"),
+        axis.ticks.y = element_blank()
+    )
+```
+
+```{r}
+ggsave(".vscode\\Graph index\\Gráfico-VBP.png", plot = grafico_vbp, dpi = 300)
+```
+
