@@ -65,6 +65,13 @@ agio_do_bezerro_rs |>
   dplyr::mutate(media_periodo_agio = mean(agio, na.rm = TRUE))
 ```
 
+media do periodo 
+2024-01-31: 14.5
+2024-03-13: 14.8
+2024-04-03: 14.9
+2024-04-25: 15.0
+2024-05-16: 14.9
+
 
 ```{r}
 label_title <- "Comportamento do ágio do bezerro no Rio Grande do Sul" # nolint
@@ -85,7 +92,7 @@ sysfonts::font_add_google(family = font2, font2, db_cache = FALSE)
 
 sysfonts::font_add(family = "Font Awesome 6 Brands", regular = "C:/Users/italo/AppData/Local/Microsoft/Windows/Fonts/Font Awesome 6 Brands-Regular-400.otf") # nolint
 
-theme_set(theme_minimal(base_family = font2, base_size = 3))
+#theme_set(theme_minimal(base_family = font2, base_size = 3))
 
 showtext::showtext_opts(dpi = 300)
 showtext::showtext_auto(enable = TRUE)
@@ -101,7 +108,7 @@ x_username <- "italommonteiro"
 instagram_username <- "italo.m.m"
 
 colors <- "gray40"
-title_text <- glue::glue('Comportamento do <span style="color:{colors}">**ágio do bezerro**</span> no Rio Grande do Sul') # nolint
+title_text <- glue::glue('Comportamento do ágio do bezerro no Rio Grande do Sul') # nolint
 subtitle_text <- glue::glue("")
 caption_text <- glue::glue(
   "**Dados:** Núcleo de Estudos em Sistemas de Produção de Bovinos de Corte e Cadeia Produtiva (NESPro)<br>", # nolint
@@ -118,22 +125,15 @@ caption_text <- glue::glue(
 )
 ```
 
+
 'Comportamento do <span style="color:{}">**ágio do bezerro**;</span> no Rio Grande do Sul'
-
-media do periodo 
-2024-01-31: 14.5
-2024-03-13: 14.8
-2024-04-03: 14.9
-2024-04-25: 15.0
-
-
 ```{r}
 agio <- agio_do_bezerro_rs |>
   ggplot(aes(x = data, y = agio)) +
     #geom_line(aes(y = agio), color = "grey40", size = 1.5) +
     geom_smooth(method = "gam") +
     geom_hline(yintercept = 30, lty = 1, color = "red") +
-    geom_hline(yintercept = 15, lty = 3, color = "grey20") +
+    geom_hline(yintercept = 14.9, lty = 3, color = "grey20") +
     scale_x_date(date_breaks = "1 month", date_labels = "%b %Y") +
     scale_y_continuous(breaks = seq(0, 40, 5), labels = scales::dollar_format(
     prefix = "", suffix = "%")) +
