@@ -20,57 +20,69 @@ library(tidyverse)
 ```
 
 ```{r Datasets}
-bezerro <- readr::read_csv("c:/Users/italo/OneDrive/Área de Trabalho/GitHub/Cepea-Esalq/.vscode/Dataset cepea/CalfPrice.csv") |> # nolint
+bezerro_cepea <- readr::read_csv("c:\\Users\\italo\\Desktop\\GitHub\\Cepea-Esalq\\.vscode\\Dataset cepea\\CalfPrice.csv") |> # nolint "c:/Users/italo/Desktop/GitHub/NESPro/.vscode/Dataset/GadoGordo.csv"
   dplyr::select(data, preco_bezerro = a_vista_r)
-
-boi <- readr::read_csv("c:/Users/italo/OneDrive/Área de Trabalho/GitHub/Cepea-Esalq/.vscode/Dataset cepea/CepeaBoiGordo.csv" ) |> # nolint 
+boi_cepea <- readr::read_csv("c:\\Users\\italo\\Desktop\\GitHub\\Cepea-Esalq\\.vscode\\Dataset cepea\\CepeaBoiGordo.csv" ) |> # nolint 
   dplyr::select(data, arroba_boi = a_vista_r)
+
+bezerro_nespro <- readr::read_csv("c:\\Users\\italo\\Desktop\\GitHub\\NESPro\\.vscode\\Dataset\\GadoReposição.csv") |> 
+  dplyr::filter(preco == "Médio") |>
+  dplyr::select(data, kg_bezerro = terneiro_6_12_m)
+boi_nespro <- readr::read_csv("c:\\Users\\italo\\Desktop\\GitHub\\NESPro\\.vscode\\Dataset\\GadoGordo.csv") |> # nolint 
+  dplyr::filter(preco == "Médio") |>
+  dplyr::select(data, kg_boi = pv_macho)
+#unique(boi_nespro$preco)
 ```
 
 A fórmula para usada calcular a relação de troca da @ boi gordo é:
   **Relação de troca** = *Preço da @ boi grodo / Preço do bezerro*
-
 ```{r Joining}
-dataset_rt <- boi |>
-  dplyr::inner_join(bezerro) |>
+rt_cepea <- boi_cepea |>
+  dplyr::inner_join(bezerro_cepea) |>
+  dplyr::mutate(ano = year(data), mes = month(data), .before = data) |>
+  print(n = 30)
+rt_nespro <- boi_nespro |>
+  dplyr::inner_join(bezerro_nespro) |>
   dplyr::mutate(ano = year(data), mes = month(data), .before = data) |>
   print(n = 30)
 ```
 
 ```{r summarise}
-relacao_troca <- dataset_rt |>
+relacao_troca_cepea <- rt_cepea |>
   dplyr::mutate(rt = preco_bezerro / arroba_boi) |>
   dplyr::group_by(ano, mes) |>
   dplyr::summarise(rt_medio = mean(rt, na.rm = FALSE)) |>
-  dplyr::mutate(data = lubridate::ymd(paste(ano, mes, "01")), .before = rt_medio) # nolint
+  dplyr::mutate(data = lubridate::ymd(paste(ano, mes, "01")), .before = rt_medio) 
+
+relacao_troca_nespro <- rt_nespro |>
+  dplyr::mutate(rt = kg_bezerro / kg_boi) |>
+  dplyr::group_by(ano, mes) |>
+  dplyr::summarise(rt_medio = mean(rt, n)) |>
+  dplyr::mutate(data = lubridate::ymd(paste(ano, mes, "01")), .before = rt_medio) 
 ```
 
 ```{r period average}
-relacao_troca |> #arrange(desc(rt_medio))
+relacao_troca_cepea |> #arrange(desc(rt_medio))
   dplyr::select(rt_medio) |>
   dplyr::mutate(media_periodo = mean(rt_medio))
+
+relacao_troca_nespro |> #arrange(desc(rt_medio))
+  dplyr::select(rt_medio) |>
+  dplyr::mutate(media_periodo = mean(rt_medio, na.rm = TRUE))
 ```
 
 
 ```{r}
 bg <- "white"
 txt_col <- "black"
-
 font <- "Josefin Sans"
 font2 <- "Open Sans"
-
-# Use the font_add_google() function to load fonts from the web
 sysfonts::font_add_google(family = font, font, db_cache = FALSE)
 sysfonts::font_add_google(family = font2, font2, db_cache = FALSE)
-
 sysfonts::font_add(family = "Font Awesome 6 Brands", regular = "C:/Users/italo/AppData/Local/Microsoft/Windows/Fonts/Font Awesome 6 Brands-Regular-400.otf") # nolint
-
-theme_set(theme_minimal(base_family = font2, base_size = 3))
-
+#theme_set(theme_minimal(base_family = font2, base_size = 3))
 showtext::showtext_opts(dpi = 300)
 showtext::showtext_auto(enable = TRUE)
-
-
 github_icon <- "&#xf09b"
 linkedin_icon <- "&#xf0e1"
 x_icon <- "&#xf099"
@@ -79,12 +91,26 @@ github_username <- "italomarquesmonteiro"
 linkedin_username <- "italomarquesmonteiro"
 x_username <- "italommonteiro"
 instagram_username <- "italo.m.m"
-
 colors <- "gray40"
-title_text <- glue::glue("@ de boi gordo necessária para comprar um bezerro") # nolint
-subtitle_text <- glue::glue("")
+title_text <- glue::glue("RELAÇÃO DE TROCA:<br>@ de boi vs 1 bezerro") # nolint
+subtitle_text <- glue::glue("Quantas arrobas (@) de boi são necessarias para comprar um bezerro")
 caption_text <- glue::glue(
   "**Dados:** Centro de Estudos Avançados em Economia Aplicada (Cepea-Esalq)<br>", # nolint
+  "**Nota:** Linha tracejada cinza representa o valor médio do período<br>",
+  "**Plot:** Ítalo Marques-Monteiro <br><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: black;'>{github_icon};</span> 
+  <span style='color: black'>{github_username}</span><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: dodgerblue4;'>{linkedin_icon};</span> 
+  <span style='color: black'>{linkedin_username}</span><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: steelblue;'>{x_icon};</span>
+  <span style='color: black'>{x_username}</span><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: red;'>{instagram_icon};</span>
+  <span style='color: black'>{instagram_username}</span>"
+)
+title_text1 <- glue::glue("RELAÇÃO DE TROCA:<br>kg de boi vs kg de bezerro") # nolint
+subtitle_text1 <- glue::glue("Quantos kilos de boi gordo são necessarios<br>para compra de um kg de bezerro entre 6 e 12 meses")
+caption_text1 <- glue::glue(
+  "**Dados:** Núcleo de Estudos em Sistemas de Produção de Bovinos de Corte e Cadeia Produtiva (Nespro-UFRGS)<br>", # nolint
   "**Nota:** Linha tracejada cinza representa o valor médio do período<br>",
   "**Plot:** Ítalo Marques-Monteiro <br><br>",
   "<span style='font-family:\"Font Awesome 6 Brands\"; color: black;'>{github_icon};</span> 
@@ -100,39 +126,28 @@ caption_text <- glue::glue(
   
   
 ```{r plot} 
-plot_relacao_troca <- relacao_troca |>
+plot_relacao_troca <- relacao_troca_nespro |>
   ggplot(aes(x = data, y = rt_medio)) +
-  geom_col(aes(fill = ifelse(data == max(data), "last",ifelse(data %in% c("2021-10-01", "2004-11-01", "2024-01-01"),"high", "default")))) + # nolint
-  scale_fill_manual(values = c(high = "grey50", default = "grey80", last = "goldenrod1", color = "black")) + # nolint
+  geom_col() +
+  #geom_col(aes(fill = ifelse(data == max(data), "last",ifelse(data %in% c("2021-10-01", "2004-11-01", "2024-01-01"),"high", "default")))) +
+  scale_fill_manual(values = c(high = "grey50", default = "grey80", last = "goldenrod1", color = "black")) +
   guides(fill = FALSE) +
-  geom_hline(yintercept = 6.61, lty = 3) +
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-  scale_y_continuous(breaks = seq(0, 12, 1), labels = scales::dollar_format(prefix = "", suffix = "@")) + # nolint
-  #labs(title = label_title, caption = label_caption) +
-  #theme(
-  #      plot.title = ggtext::element_markdown(face = "bold", family = "Source Sans Pro", size = 25, hjust = 0, color = "grey40",), # nolint
-  #      plot.caption = element_text(face = "bold", family = "Fira Sans Pro", size = 12, color = "gray70"), # nolint
-  #      panel.background = element_rect(fill = "white", color = "grey90"),
-  #      plot.background = element_rect(fill = "white"),
-  #      panel.grid = element_line(color = "grey90"),
-  #      legend.background = element_blank(),
-  #      legend.position = c(0.7, 0.8),
-  #      legend.key = element_rect(fill = "grey95", color = "grey95"),
-  #      legend.text = element_text(color = "grey40", size = 12),
-  #      legend.title = element_text(face = "bold", color = "grey40"),
-  #      axis.title.x = element_blank(),
-  #      axis.title.y = element_blank(),
-  #      axis.text.y = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 8, hjust = 0, color = "gray50"), # nolint,
-  #      axis.text.x = ggtext::element_markdown(face = "bold", family = "Fira Sans",size = 8, color = "gray50", angle = 90, hjust = 1, vjust = 1) # nolint
-  #)
+  #geom_hline(yintercept = 6.61, lty = 3) +
+  geom_hline(yintercept = 1.29, lty = 3) +
+  #scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b %Y") +
+  scale_y_continuous(breaks = seq(0, 12, 1), labels = scales::dollar_format(prefix = "", suffix = "@")) +
+  scale_y_continuous(breaks = seq(0, 2, 0.1), labels = scales::dollar_format(prefix = "", suffix = "kg")) +
   labs(
-    title = title_text,
-      x = "Data",
-        caption = caption_text
+    title = title_text1,
+    x = "Data",
+    subtitle = subtitle_text1,
+    caption = caption_text1
   ) +
   theme(
-        plot.title = ggtext::element_markdown(face = "bold", family = font, size = 25, hjust = 0, color = "gray40",), # nolint
-        plot.caption = ggtext::element_markdown(family = font, hjust = 0, margin = margin(10,0,0,0), size = 8, color = txt_col, lineheight = 1.2), # nolint
+        plot.title = ggtext::element_markdown(face = "bold", family = font, size = 25, hjust = 0, color = "gray40",), 
+        plot.subtitle = ggtext::element_markdown(face = "bold", family = font, size = 15, hjust = 0, color = "gray40",),       
+        plot.caption = ggtext::element_markdown(family = font, hjust = 0, margin = margin(10,0,0,0), size = 8, color = txt_col, lineheight = 1.2), 
         panel.background = element_rect(fill = "white", color = "grey90"),
         plot.background = element_rect(fill = "white"),
         panel.grid = element_line(color = "grey90"),
@@ -141,11 +156,11 @@ plot_relacao_troca <- relacao_troca |>
         legend.key = element_rect(fill = "grey95", color = "grey95"),
         legend.text = element_text(color = "grey40", size = 12),
         legend.title = element_text(face = "bold", color = "grey40"),
-        axis.title.x = ggtext::element_markdown(face = "bold", family = font,size = 15, hjust = 0, color = "gray50"), # nolint,
+        axis.title.x = ggtext::element_markdown(face = "bold", family = font,size = 15, hjust = 0, color = "gray50"),
         axis.title.y = element_blank(),
-        axis.text.y = ggtext::element_markdown(face = "bold", family = font2,size = 8, hjust = 0, color = "gray50"), # nolint,
+        axis.text.y = ggtext::element_markdown(face = "bold", family = font2,size = 8, hjust = 0, color = "gray50"), 
         axis.text.x = ggtext::element_markdown(
-          face = "bold", family = font2 ,size = 8, color = "gray50", angle=60, hjust=1) # nolint
+          face = "bold", family = font2 ,size = 8, color = "gray50", angle=60, hjust=1) 
   )
 plot_relacao_troca
 ```
