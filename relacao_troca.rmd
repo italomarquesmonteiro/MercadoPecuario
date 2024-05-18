@@ -51,13 +51,13 @@ rt_nespro <- boi_nespro |>
 relacao_troca_cepea <- rt_cepea |>
   dplyr::mutate(rt = preco_bezerro / arroba_boi) |>
   dplyr::group_by(ano, mes) |>
-  dplyr::summarise(rt_medio = mean(rt, na.rm = FALSE)) |>
+  dplyr::summarise(rt_medio = mean(rt, na.rm = TRUE)) |>
   dplyr::mutate(data = lubridate::ymd(paste(ano, mes, "01")), .before = rt_medio) 
 
 relacao_troca_nespro <- rt_nespro |>
   dplyr::mutate(rt = kg_bezerro / kg_boi) |>
   dplyr::group_by(ano, mes) |>
-  dplyr::summarise(rt_medio = mean(rt, n)) |>
+  dplyr::summarise(rt_medio = mean(rt, na.rm = TRUE)) |>
   dplyr::mutate(data = lubridate::ymd(paste(ano, mes, "01")), .before = rt_medio) 
 ```
 
@@ -92,11 +92,11 @@ linkedin_username <- "italomarquesmonteiro"
 x_username <- "italommonteiro"
 instagram_username <- "italo.m.m"
 colors <- "gray40"
-title_text <- glue::glue("RELAÇÃO DE TROCA:<br>@ de boi vs 1 bezerro") # nolint
-subtitle_text <- glue::glue("Quantas arrobas (@) de boi são necessarias para comprar um bezerro")
+title_text <- glue::glue("Relação de Troca")
+subtitle_text <- glue::glue("Quantidade de arrobas (@) de boi gordo<br>necessária para adquirir um bezerro(cabeça).")
 caption_text <- glue::glue(
+  "**Nota:** A linha horizontal tracejada representa o valor médio do período. As barras escuras representam os valores mínimo e máximo dentro do período.<br>",
   "**Dados:** Centro de Estudos Avançados em Economia Aplicada (Cepea-Esalq)<br>", # nolint
-  "**Nota:** Linha tracejada cinza representa o valor médio do período<br>",
   "**Plot:** Ítalo Marques-Monteiro <br><br>",
   "<span style='font-family:\"Font Awesome 6 Brands\"; color: black;'>{github_icon};</span> 
   <span style='color: black'>{github_username}</span><br>",
@@ -107,11 +107,11 @@ caption_text <- glue::glue(
   "<span style='font-family:\"Font Awesome 6 Brands\"; color: red;'>{instagram_icon};</span>
   <span style='color: black'>{instagram_username}</span>"
 )
-title_text1 <- glue::glue("RELAÇÃO DE TROCA:<br>kg de boi vs kg de bezerro") # nolint
-subtitle_text1 <- glue::glue("Quantos kilos de boi gordo são necessarios<br>para compra de um kg de bezerro entre 6 e 12 meses")
+title_text1 <- glue::glue("Relação de Troca")
+subtitle_text1 <- glue::glue("Quantos quilos (kg) de boi gordo são necessários para comprar<br>um quilo de bezerro na faixa etária de 6 a 12 meses.")
 caption_text1 <- glue::glue(
-  "**Dados:** Núcleo de Estudos em Sistemas de Produção de Bovinos de Corte e Cadeia Produtiva (Nespro-UFRGS)<br>", # nolint
-  "**Nota:** Linha tracejada cinza representa o valor médio do período<br>",
+  "**Nota:** A linha horizontal tracejada representa o valor médio do período. As barras escuras representam os valores mínimo e máximo dentro do período.<br>",
+  "**Dados:** Núcleo de Estudos em Sistemas de Produção de Bovinos de Corte e Cadeia Produtiva (NESPro-UFRGS)<br>", # nolint
   "**Plot:** Ítalo Marques-Monteiro <br><br>",
   "<span style='font-family:\"Font Awesome 6 Brands\"; color: black;'>{github_icon};</span> 
   <span style='color: black'>{github_username}</span><br>",
@@ -123,21 +123,29 @@ caption_text1 <- glue::glue(
   <span style='color: black'>{instagram_username}</span>"
 )
 ```
+
+```{r}
+relacao_troca_cepea |>
+  dplyr::arrange(rt_medio)
+  #dplyr::arrange(desc(rt_medio))
+  #dplyr::arrange(desc(data))
+```
   
   
 ```{r plot} 
-plot_relacao_troca <- relacao_troca_nespro |>
-  ggplot(aes(x = data, y = rt_medio)) +
-  geom_col() +
-  #geom_col(aes(fill = ifelse(data == max(data), "last",ifelse(data %in% c("2021-10-01", "2004-11-01", "2024-01-01"),"high", "default")))) +
-  scale_fill_manual(values = c(high = "grey50", default = "grey80", last = "goldenrod1", color = "black")) +
+plot_rt_nespro <- relacao_troca_nespro |>
+  ggplot(aes(x = data, y = rt_medio) ) +
+  geom_col(aes(fill = ifelse(data == max(data), "last",ifelse(data %in% c("2022-12-01", "2021-04-01"),"high", "default")))) +
+  #geom_col(aes(fill = ifelse(data == max(data), "last",ifelse(data %in% c("2021-10-01", "2004-11-01"),"high", "default")))) +
+  scale_fill_manual(values = c("min" = "grey50", "max" = "grey50", "last" = "goldenrod1", "default" = "grey80")) +
+  #scale_fill_manual(values = c(high = "grey50", default = "grey80", last = "goldenrod1", color = "black")) +
   guides(fill = FALSE) +
   #geom_hline(yintercept = 6.61, lty = 3) +
   geom_hline(yintercept = 1.29, lty = 3) +
   #scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_x_date(date_breaks = "1 month", date_labels = "%b %Y") +
-  scale_y_continuous(breaks = seq(0, 12, 1), labels = scales::dollar_format(prefix = "", suffix = "@")) +
-  scale_y_continuous(breaks = seq(0, 2, 0.1), labels = scales::dollar_format(prefix = "", suffix = "kg")) +
+  #scale_y_continuous(breaks = seq(0, 12, 1), labels = scales::dollar_format(prefix = "", suffix = " @")) +
+  scale_y_continuous(breaks = seq(0, 2, 0.1), labels = scales::dollar_format(prefix = "", suffix = " kg")) +
   labs(
     title = title_text1,
     x = "Data",
@@ -160,11 +168,11 @@ plot_relacao_troca <- relacao_troca_nespro |>
         axis.title.y = element_blank(),
         axis.text.y = ggtext::element_markdown(face = "bold", family = font2,size = 8, hjust = 0, color = "gray50"), 
         axis.text.x = ggtext::element_markdown(
-          face = "bold", family = font2 ,size = 8, color = "gray50", angle=60, hjust=1) 
+          face = "bold", family = font2 ,size = 8, color = "gray50", angle = 90, hjust = 1) 
   )
-plot_relacao_troca
+plot_rt_nespro
 ```
 
 ```{r}
-ggsave(".vscode/Graph index/RelaçãoTroca.png", plot = plot_relacao_troca, dpi = 300)
+ggsave(".vscode/Graph index/RT-Nespro.png", plot = plot_rt_nespro, dpi = 300)
 ```
