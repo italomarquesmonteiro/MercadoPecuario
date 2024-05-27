@@ -28,15 +28,21 @@ Este projeto tem como principal objetivo reunir informações essenciais para ca
 
 ## Dados
 
-Os dados analisados neste contexto serão minuciosamente coletados e cruzados para fortalecer a robustez da análise. As fontes utilizadas estão diretamente relacionadas ao cenário do agronegócio no país, incluindo instituições renomadas como [Cepea](https://www.cepea.esalq.usp.br/br), [NESPro](https://www.ufrgs.br/nespro/), [Epagri](https://cepa.epagri.sc.gov.br/), [Emater](https://www.emater.tche.br/site/index.php), [MAPA](https://www.gov.br/agricultura/pt-br), [Embrapa](https://www.embrapa.br/), [Seapi](https://www.agricultura.rs.gov.br/inicial) e [USDA-Brazil](https://usdabrazil.org.br/).
+Os dados analisados neste contexto serão minuciosamente coletados e cruzados para fortalecer a robustez da análise. As fontes utilizadas estão diretamente relacionadas ao cenário do agronegócio no país, incluindo instituições renomadas como [Cepea](https://www.cepea.esalq.usp.br/br), [NESPro](https://www.ufrgs.br/nespro/), [Epagri](https://cepa.epagri.sc.gov.br/), [Emater](https://www.emater.tche.br/site/index.php), [MAPA](https://www.gov.br/agricultura/pt-br), [Embrapa](https://www.embrapa.br/), [Seapi](https://www.agricultura.rs.gov.br/inicial), [CTPEC](https://www.ctpecunipampa.com.br/) e [USDA-Brazil](https://usdabrazil.org.br/).
 
 > [!NOTE]
 > 
 
 ## Ágio do bezerro
 
-
 Entender e calcular o ágio é fundamental para análise de mercado e tomada de decisões, permitindo avaliar a eficiência na comercialização, seja na compra ou na venda de animais. Este indicador fornece insights valiosos para otimizar os resultados da atividade pecuária, especialmente em um cenário de margens ajustadas.
 
 <img style="width:px; height:px;" src=".vscode/Graph index/AgioBezerro.png" alt="Ágio Bezerro">
 
+## Relação de troca: Boi Cepea vs Bezerro-MS
+
+<img style="width:px; height:px;" src=".vscode\Graph index\RT-Cepea.png" alt="Ágio Bezerro">
+
+## Relação de troca: Nespro | CTPEC
+
+<img style="width:px; height:px;" src=".vscode\Graph index\RT-Nespro.png" alt="Ágio Bezerro">
