@@ -19,30 +19,44 @@ library(tidyverse)
 ```
 
 ```{r}
-boi_rs <- readr::read_csv(
-    "c:/Users/italo/Desktop/GitHub/NESPro/.vscode/Dataset/GadoGordo.csv" # nolint
-  ) |>
+boi_ctpec  <- readr::read_csv("c:\\Users\\italo\\Desktop\\GitHub\\CTPec\\.vscode\\Dataset\\Cotações.csv") |>
+  dplyr::filter(data <= "2021-01-25" & unidade =="kg" & produto == "Boi gordo") |>
+  dplyr::select(data, produto, valor) |>
+  tidyr::pivot_wider(names_from = produto, values_from = valor) |>
+  dplyr::rename(boi = `Boi gordo`)
+
+bezerro_ctpec  <- readr::read_csv("c:\\Users\\italo\\Desktop\\GitHub\\CTPec\\.vscode\\Dataset\\Cotações.csv") |>
+  dplyr::filter(data <= "2021-01-25" & unidade =="kg" & produto == "Terneiro") |>
+  dplyr::select(data, produto, valor) |>
+  tidyr::pivot_wider(names_from = produto, values_from = valor) |>
+  dplyr::rename(bezerro = Terneiro)
+
+boi_rs <- readr::read_csv("c:/Users/italo/Desktop/GitHub/NESPro/.vscode/Dataset/GadoGordo.csv") |>
+  dplyr::filter(data >= "2021-01-25" & preco == "Médio") |>
+  dplyr::select(data, boi = pv_macho)
+
+bezerro_rs <- readr::read_csv("c:/Users/italo/Desktop/GitHub/NESPro/.vscode/Dataset/GadoReposição.csv") |>
   dplyr::filter(preco == "Médio") |>
-  dplyr::select(!c(pc_macho, pc_femea, pv_femea))
+  dplyr::select(data, bezerro = terneiro_6_12_m) 
+```
 
+```{r}
+boi_cptec_rs <- boi_ctpec |>
+  dplyr::full_join(boi_rs) 
 
-bezerro_rs <- readr::read_csv(
-  "c:/Users/italo/Desktop/GitHub/NESPro/.vscode/Dataset/GadoReposição.csv" # nolint
-  ) |>
-  dplyr::select(data, preco, terneiro_6_12_m) |>
-  dplyr::filter(preco == "Médio")
+bezerro_cptec_rs <- bezerro_ctpec |>
+  dplyr::full_join(bezerro_rs)
+
+agio <- bezerro_cptec_rs |>
+  dplyr::inner_join(boi_cptec_rs)
+
 ```
 
 A fórmula básica para calcular o ágio do bezerro é:
   **Ágio do Bezerrro** = *{[(Preço do bezerro - Preço do boi) / Preço do boi] * 100}*
 
 ```{r}
-agio_do_bezerro_rs <- boi_rs |>
-    dplyr::full_join(bezerro_rs) |>
-    dplyr::rename(
-      boi = pv_macho,
-        bezerro = terneiro_6_12_m
-  ) |>
+agio_do_bezerro <- agio  |>
   dplyr::mutate(
     agio = (((bezerro - boi) / boi) * 100),
       media_movel_agio = zoo::rollmean(
@@ -61,7 +75,7 @@ agio_do_bezerro_rs <- boi_rs |>
 ```
 
 ```{r}
-agio_do_bezerro_rs |>
+agio_do_bezerro |>
   dplyr::mutate(media_periodo_agio = mean(agio, na.rm = TRUE))
 ```
 
@@ -71,13 +85,6 @@ media do periodo
 2024-04-03: 14.9
 2024-04-25: 15.0
 2024-05-16: 14.9
-
-
-```{r}
-label_title <- "Comportamento do ágio do bezerro no Rio Grande do Sul" # nolint
-label_caption <- "Nota: Linha tracejada cinza representa o valor médio do período. /nOs valores do preço da arroba são referentes as mesmas datas de divulgação em ambas as praças  /nDados do boi gordo RS: Núcleo de Estudos em Sistemas de Produção de Bovinos de Corte e Cadeia Produtiva (NESPro) /nPlot: @italo.m.m" # nolint
-```
-
 
 ```{r}
 bg <- "white"
@@ -108,10 +115,10 @@ x_username <- "italommonteiro"
 instagram_username <- "italo.m.m"
 
 colors <- "gray40"
-title_text <- glue::glue('Comportamento do ágio do bezerro no Rio Grande do Sul') # nolint
-subtitle_text <- glue::glue("")
+title_text <- glue::glue('Ágio do bezerro') 
+subtitle_text <- glue::glue("Comportamento do ágio do bezerro no Rio Grande do Sul")
 caption_text <- glue::glue(
-  "**Dados:** Núcleo de Estudos em Sistemas de Produção de Bovinos de Corte e Cadeia Produtiva (NESPro)<br>", # nolint
+  "**Dados:** Núcleo de Estudos em Sistemas de Produção de Bovinos de Corte e Cadeia Produtiva (NESPro) e Centro de Tecnologia em Pecuária (CTPEC)<br>", # nolint
   "**Nota:** Linha tracejada cinza representa o valor médios do período<br>",
   "**Plot:** Ítalo Marques-Monteiro <br><br>",
   "<span style='font-family:\"Font Awesome 6 Brands\"; color: black;'>{github_icon};</span> 
@@ -125,26 +132,27 @@ caption_text <- glue::glue(
 )
 ```
 
-
 'Comportamento do <span style="color:{}">**ágio do bezerro**;</span> no Rio Grande do Sul'
 ```{r}
-agio <- agio_do_bezerro_rs |>
+agio <- agio_do_bezerro |>
   ggplot(aes(x = data, y = agio)) +
     #geom_line(aes(y = agio), color = "grey40", size = 1.5) +
     geom_smooth(method = "gam") +
     geom_hline(yintercept = 30, lty = 1, color = "red") +
-    geom_hline(yintercept = 14.9, lty = 3, color = "grey20") +
+    geom_hline(yintercept = 14.2, lty = 3, color = "grey20") +
     scale_x_date(date_breaks = "1 month", date_labels = "%b %Y") +
     scale_y_continuous(breaks = seq(0, 40, 5), labels = scales::dollar_format(
     prefix = "", suffix = "%")) +
-    labs(
+  labs(
     title = title_text,
-      x = "Data",
-        caption = caption_text
+    subtitle = subtitle_text,
+    x = "Data",
+    caption = caption_text
   ) +
   theme(
-        plot.title = ggtext::element_markdown(face = "bold", family = font, size = 25, hjust = 0, color = "gray40",), # nolint
-        plot.caption = ggtext::element_markdown(family = font, hjust = 0, margin = margin(10,0,0,0), size = 8, color = txt_col, lineheight = 1.2), # nolint
+        plot.title = ggtext::element_markdown(size = 25, color = "gray40", family = font, face = "bold",   hjust = 0),
+        plot.subtitle = ggtext::element_markdown(size = 15, color = "gray40", family = font, face = "italic",   hjust = 0),        
+        plot.caption = ggtext::element_markdown(size = 8, color = txt_col, family = font, hjust = 0, margin = margin(10,0,0,0), lineheight = 1.2),
         panel.background = element_rect(fill = "white", color = "grey90"),
         plot.background = element_rect(fill = "white"),
         panel.grid = element_line(color = "grey90"),
@@ -157,11 +165,11 @@ agio <- agio_do_bezerro_rs |>
         axis.title.y = element_blank(),
         axis.text.y = ggtext::element_markdown(face = "bold", family = font2,size = 8, hjust = 0, color = "gray50"), # nolint,
         axis.text.x = ggtext::element_markdown(
-          face = "bold", family = font2 ,size = 8, color = "gray50", angle=60, hjust=1) # nolint
+          face = "bold", family = font2 ,size = 8, color = "gray50", angle = 90, hjust = 1) # nolint
   )
 agio
 ```
 
 ```{r}
-ggsave(".vscode/Graph index/AgioBezerro.png", plot = agio, dpi = 300)
+ggsave(".vscode/Graph index/AgioBezerro.png", plot = agio, width = 16, height = 10, dpi = 300)
 ```
