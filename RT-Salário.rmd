@@ -1,0 +1,86 @@
+---
+title: "Relação de troca do boi gordo com salário mínimo"
+description: "A relação de troca entre o boi gordo e o salário mínimo é uma métrica utilizada para avaliar o poder de compra do salário mínimo em relação ao preço da carne bovina."
+author script: 
+  - name: "Ítalo Marques-Monteiro"
+    github: https://github.com/italomarquesmonteiro
+    kaggle: https://www.kaggle.com/talomarquesmonteiro
+    linkedin: linkedin.com/in/italomarquesmonteiro
+    medium: https://medium.com/@italomarquesmonteiro
+    lattes: http://lattes.cnpq.br/7174985368517137
+    orcid_id: https://orcid.org/0000-0003-4367-1034
+    affiliation: Smart Data
+        
+date: "2024-01-26"
+output: html_document
+---
+
+```{r Library}
+library(tidyverse)
+```
+
+```{r}
+font <- "Josefin Sans"
+font2 <- "Open Sans"
+sysfonts::font_add_google(family = font, font, db_cache = FALSE)
+sysfonts::font_add_google(family = font2, font2, db_cache = FALSE)
+sysfonts::font_add(family = "Font Awesome 6 Brands", regular = "C:/Users/italo/AppData/Local/Microsoft/Windows/Fonts/Font Awesome 6 Brands-Regular-400.otf") # nolint
+#theme_set(theme_minimal(base_family = font2, base_size = 3))
+showtext::showtext_opts(dpi = 300)
+showtext::showtext_auto(enable = TRUE)
+```
+
+
+```{r}
+soldo <- readr::read_csv("C:\\Users\\italo\\Desktop\\GitHub\\Salario-Minimo-BR\\.vscode\\Dataset\\Salário-Mínimo-Mensal.csv") |>
+    janitor::clean_names("snake")
+
+boi_rs <- readr::read_csv("c:/Users/italo/Desktop/GitHub/NESPro/.vscode/Dataset/GadoGordo.csv") |>
+  dplyr::filter(data >= "2015-05-28" & preco == "Médio") |>
+  dplyr::select(data, boi = pc_macho)
+
+boi_ctpec  <- readr::read_csv("c:\\Users\\italo\\Desktop\\GitHub\\CTPec\\.vscode\\Dataset\\Cotações.csv") |>
+  dplyr::filter(data <= "2015-05-27" & unidade =="Carcaça" & produto == "Boi gordo") |>
+  dplyr::select(data, produto, valor) |>
+  tidyr::pivot_wider(names_from = produto, values_from = valor) |>
+  dplyr::rename(boi = `Boi gordo`)
+```
+
+```{r}
+#preco_boi <- 
+boi_rs |>
+    dplyr::full_join(boi_ctpec) |>
+    dplyr::arrange(data) |>
+    print(n = 20)
+```
+
+```{r}
+github_icon <- "&#xf09b"
+linkedin_icon <- "&#xf0e1"
+x_icon <- "&#xf099"
+instagram_icon <- "&#xf16d"
+github_username <- "italomarquesmonteiro"
+linkedin_username <- "italomarquesmonteiro"
+x_username <- "italommonteiro"
+instagram_username <- "italo.m.m"
+
+bg <- "white"
+txt_col <- "black"
+colors <- "gray40"
+
+title_text <- glue::glue("Relação de Troca")
+subtitle_text <- glue::glue("A relação de troca entre o boi gordo no Rio Grande do Sul e o salário mínimo é uma métrica econômica importante <br> que avalia quantas arrobas (@) de boi gordo são necessárias para pagar o valor de um salário mínimo.")
+caption_text <- glue::glue(
+  "**Nota:** A linha horizontal tracejada representa o valor médio do período. As barras escuras representam os valores mínimo e máximo dentro do período.<br>",
+  "**Dados:** Centro de Estudos Avançados em Economia Aplicada (Cepea-Esalq)<br>",
+  "**Plot:** Ítalo Marques-Monteiro <br><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: black;'>{github_icon};</span> 
+  <span style='color: black'>{github_username}</span><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: dodgerblue4;'>{linkedin_icon};</span> 
+  <span style='color: black'>{linkedin_username}</span><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: steelblue;'>{x_icon};</span>
+  <span style='color: black'>{x_username}</span><br>",
+  "<span style='font-family:\"Font Awesome 6 Brands\"; color: red;'>{instagram_icon};</span>
+  <span style='color: black'>{instagram_username}</span>"
+)
+```
