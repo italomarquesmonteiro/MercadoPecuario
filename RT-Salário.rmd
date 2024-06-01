@@ -33,8 +33,9 @@ showtext::showtext_auto(enable = TRUE)
 
 ```{r}
 soldo <- readr::read_csv("C:\\Users\\italo\\Desktop\\GitHub\\Salario-Minimo-BR\\.vscode\\Dataset\\Salário-Mínimo-Mensal.csv") |>
-    janitor::clean_names("snake")
-
+    janitor::clean_names("snake") |>
+    dplyr::select(data, valor)
+    
 boi_rs <- readr::read_csv("c:/Users/italo/Desktop/GitHub/NESPro/.vscode/Dataset/GadoGordo.csv") |>
   dplyr::filter(data >= "2015-05-28" & preco == "Médio") |>
   dplyr::select(data, boi = pc_macho)
@@ -47,11 +48,17 @@ boi_ctpec  <- readr::read_csv("c:\\Users\\italo\\Desktop\\GitHub\\CTPec\\.vscode
 ```
 
 ```{r}
-#preco_boi <- 
+preco_boi_mes <-   # Calcular a média mensal
 boi_rs |>
-    dplyr::full_join(boi_ctpec) |>
-    dplyr::arrange(data) |>
-    print(n = 20)
+  dplyr::full_join(boi_ctpec) |>
+  dplyr::arrange(data) |>
+  dplyr::mutate(data = lubridate::floor_date(data, "month")) |>  # Extrair o mês de cada data
+  dplyr::group_by(data) |>
+  dplyr::summarise(boi_media_mes = mean(boi, na.rm = TRUE))
+
+arroba_salario <- preco_boi_mes |>
+  dplyr::inner_join(soldo) |>
+  dplyr::mutate(rt_salario = valor / (boi_media_mes * 15))
 ```
 
 ```{r}
@@ -69,10 +76,10 @@ txt_col <- "black"
 colors <- "gray40"
 
 title_text <- glue::glue("Relação de Troca")
-subtitle_text <- glue::glue("A relação de troca entre o boi gordo no Rio Grande do Sul e o salário mínimo é uma métrica econômica importante <br> que avalia quantas arrobas (@) de boi gordo são necessárias para pagar o valor de um salário mínimo.")
+subtitle_text <- glue::glue("A relação de troca entre o boi gordo no Rio Grande do Sul e o salário mínimo é uma métrica importante <br> que quantifica quantas arrobas (@) de boi gordo são necessárias para pagar o valor de um salário mínimo.")
 caption_text <- glue::glue(
-  "**Nota:** A linha horizontal tracejada representa o valor médio do período. As barras escuras representam os valores mínimo e máximo dentro do período.<br>",
-  "**Dados:** Centro de Estudos Avançados em Economia Aplicada (Cepea-Esalq)<br>",
+  "**Nota:** A linha horizontal tracejada representa o valor médio do período.<br>",
+  "**Dados:** Ministerio da Economia, Núcleo de Estudos em Sistemas de Produção de Bovinos de Corte e Cadeia Produtiva (NESPro) e Centro de Tecnologia em Pecuária (CTPEC)<br>",
   "**Plot:** Ítalo Marques-Monteiro <br><br>",
   "<span style='font-family:\"Font Awesome 6 Brands\"; color: black;'>{github_icon};</span> 
   <span style='color: black'>{github_username}</span><br>",
@@ -83,4 +90,63 @@ caption_text <- glue::glue(
   "<span style='font-family:\"Font Awesome 6 Brands\"; color: red;'>{instagram_icon};</span>
   <span style='color: black'>{instagram_username}</span>"
 )
+```
+
+```{r}
+# Filtrar tempo
+#arroba_salario <- arroba_salario |> dplyr::filter(data >="2023-01-01")
+# Calcular a média do período
+media_periodo <- mean(arroba_salario$rt_salario)
+
+rt_arroba_salario <- arroba_salario |>
+  dplyr::mutate(
+        color = case_when(
+            rt_salario == min(rt_salario) ~ "goldenrod1",
+            rt_salario == max(rt_salario) ~ "goldenrod1",
+            rt_salario == last(rt_salario) ~ "goldenrod1",
+            TRUE ~ "grey80"
+  )) |>
+  ggplot(aes(x = data, y = rt_salario, fill = color)) +
+    geom_col() +
+    geom_hline(yintercept = media_periodo, lty = 3, color = "grey20") +
+    scale_fill_identity(guide = "none") +
+    scale_x_date(date_breaks = "1 year", date_labels = "%b %Y") +
+    scale_y_continuous(breaks = seq(0, 10, 1), labels = scales::dollar_format(
+    prefix = "", suffix = "@")) +
+    labs(
+        title = title_text,
+       # x = "Produto",
+        caption = caption_text,
+        subtitle = subtitle_text,
+        color = ""
+    ) +
+    theme(
+        plot.title = ggtext::element_markdown(face = "bold", family = font, size = 25, hjust = 0, color = "gray40",), # nolint
+        plot.caption = ggtext::element_markdown(family = font, hjust = 0, margin = margin(10,0,0,0), size = 8, color = txt_col, lineheight = 1.2), # nolint
+        plot.subtitle = ggtext::element_markdown(face = "bold", family = font, size = 15, hjust = 0, color = "gray40",),
+        panel.background = element_rect(fill = "white", color = "grey90"),
+        plot.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(color = "grey90", size = 0.3),
+        panel.grid = element_line(color = "white"),
+        legend.background = element_blank(),
+        #legend.position = c(0.5, 0.8),
+        #legend.key = element_rect(fill = "grey95", color = "grey95"),
+        #legend.text = element_text(color = "grey40", size = 12),
+        #legend.title = element_text(face = "bold", color = "grey40", size = 12),
+        axis.title.x = element_blank(),
+        #axis.title.x = ggtext::element_markdown(face = "bold", family = font,size = 15, hjust = 0, color = "gray50"), # nolint,
+        axis.title.y = element_blank(),
+        #axis.text.y = element_blank(),
+        axis.text.y = ggtext::element_markdown(face = "bold", family = font2, size = 10, hjust = 0, color = "gray50"), # nolint,
+        axis.text.x = ggtext::element_markdown(
+          face = "bold", family = font2 , size = 10, color = "gray50", angle = 90, hjust = 0.5),# nolint
+        axis.line.x = element_line(linewidth = .75, color = "grey60"),
+        axis.ticks.x = element_line(color = "gray50"),
+        axis.ticks.y = element_blank()
+    )
+rt_arroba_salario
+```
+
+```{r}
+ggsave(".vscode\\Graph index\\RT-Arroba-Salário.png", plot = rt_arroba_salario, dpi = 300)
 ```
