@@ -46,3 +46,7 @@ Entender e calcular o ágio é fundamental para análise de mercado e tomada de 
 ## Relação de troca: Nespro | CTPEC
 
 <img style="width:px; height:px;" src=".vscode\Graph index\RT-Nespro.png" alt="Ágio Bezerro">
+
+## Relação de troca: Arroba do boi vs Salário Mínimo
+
+<img style="width:px; height:px;" src=".vscode\Graph index\RT-Arroba-Salário.png" alt="RT-@-R$">
