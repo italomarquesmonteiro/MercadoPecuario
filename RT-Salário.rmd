@@ -24,7 +24,7 @@ font <- "Josefin Sans"
 font2 <- "Open Sans"
 sysfonts::font_add_google(family = font, font, db_cache = FALSE)
 sysfonts::font_add_google(family = font2, font2, db_cache = FALSE)
-sysfonts::font_add(family = "Font Awesome 6 Brands", regular = "C:/Users/italo/AppData/Local/Microsoft/Windows/Fonts/Font Awesome 6 Brands-Regular-400.otf") # nolint
+sysfonts::font_add(family = "Font Awesome 6 Brands", regular = "C:/Users/italo/AppData/Local/Microsoft/Windows/Fonts/Font Awesome 6 Brands-Regular-400.otf") 
 #theme_set(theme_minimal(base_family = font2, base_size = 3))
 showtext::showtext_opts(dpi = 300)
 showtext::showtext_auto(enable = TRUE)
@@ -76,9 +76,9 @@ txt_col <- "black"
 colors <- "gray40"
 
 title_text <- glue::glue("Relação de Troca")
-subtitle_text <- glue::glue("A relação de troca entre o boi gordo no Rio Grande do Sul e o salário mínimo é uma métrica importante <br> que quantifica quantas arrobas (@) de boi gordo são necessárias para pagar o valor de um salário mínimo.")
+subtitle_text <- glue::glue("A relação de troca entre o boi gordo no Rio Grande do Sul e o <br> salário mínimo é uma métrica que quantifica quantas arrobas (@) <br> de boi gordo são necessárias para atingir o valor de um salário mínimo.")
 caption_text <- glue::glue(
-  "**Nota:** A linha horizontal tracejada representa o valor médio do período.<br>",
+  "**Nota:** A linha horizontal tracejada representa o valor médio do período. As barras escuras são mínimo e máximo, a barra amarela o ultimo mês.<br>",
   "**Dados:** Ministerio da Economia, Núcleo de Estudos em Sistemas de Produção de Bovinos de Corte e Cadeia Produtiva (NESPro) e Centro de Tecnologia em Pecuária (CTPEC)<br>",
   "**Plot:** Ítalo Marques-Monteiro <br><br>",
   "<span style='font-family:\"Font Awesome 6 Brands\"; color: black;'>{github_icon};</span> 
@@ -101,8 +101,8 @@ media_periodo <- mean(arroba_salario$rt_salario)
 rt_arroba_salario <- arroba_salario |>
   dplyr::mutate(
         color = case_when(
-            rt_salario == min(rt_salario) ~ "goldenrod1",
-            rt_salario == max(rt_salario) ~ "goldenrod1",
+            rt_salario == min(rt_salario) ~ "grey50",
+            rt_salario == max(rt_salario) ~ "grey50",
             rt_salario == last(rt_salario) ~ "goldenrod1",
             TRUE ~ "grey80"
   )) |>
@@ -110,7 +110,7 @@ rt_arroba_salario <- arroba_salario |>
     geom_col() +
     geom_hline(yintercept = media_periodo, lty = 3, color = "grey20") +
     scale_fill_identity(guide = "none") +
-    scale_x_date(date_breaks = "1 year", date_labels = "%b %Y") +
+    scale_x_date(date_breaks = "3 month", date_labels = "%b %Y") +
     scale_y_continuous(breaks = seq(0, 10, 1), labels = scales::dollar_format(
     prefix = "", suffix = "@")) +
     labs(
@@ -126,7 +126,7 @@ rt_arroba_salario <- arroba_salario |>
         plot.subtitle = ggtext::element_markdown(face = "bold", family = font, size = 15, hjust = 0, color = "gray40",),
         panel.background = element_rect(fill = "white", color = "grey90"),
         plot.background = element_rect(fill = "white"),
-        panel.grid.major = element_line(color = "grey90", size = 0.3),
+        panel.grid.major = element_line(color = "grey90", linewidth = 0.3),
         panel.grid = element_line(color = "white"),
         legend.background = element_blank(),
         #legend.position = c(0.5, 0.8),
