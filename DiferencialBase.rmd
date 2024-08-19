@@ -12,7 +12,7 @@ library(tidyverse)
 
 ```{r}
 praca_rs <- readr::read_csv(
-    "c:/Users/italo/Desktop/GitHub/NESPro/.vscode/Dataset/GadoGordo.csv"
+    "c:\\Users\\italo\\OneDrive\\Área de Trabalho\\GitHub\\NESPro\\.vscode\\Dataset/GadoGordo.csv"
   ) |>
   dplyr::filter(preco == "Médio") |>
   dplyr::select(!c(pv_macho, pv_femea, pc_femea), boi_rs = pc_macho) |>
@@ -21,44 +21,45 @@ praca_rs <- readr::read_csv(
     #pc_femea = pc_femea * 15
   ) |> dplyr::select(-preco)
 
-praca_sp <- readr::read_csv(
-  "c:/Users/italo/Desktop/GitHub/Cepea-Esalq/.vscode/Dataset cepea/CepeaBoiGordo.csv" # nolint
+praca_sp <- readr::read_csv("c:\\Users\\italo\\OneDrive\\Área de Trabalho\\GitHub\\Cepea-Esalq\\.github\\.vscode\\Dataset cepea\\Cepea-Boi-Gordo.csv" # nolint
   ) |>
   dplyr::select(data, boi_sp = a_vista_r)
 ```
 
-```{r}	
-dfb_boi <- praca_rs |> 
-  dplyr::inner_join(praca_sp) |>
+
+```{r}
+media_mensal <- praca_rs |>
+  inner_join(praca_sp, by = join_by(data)) |>
+  mutate(ano_mes = floor_date(data, "month")) |> # Extrai o ano e mês da data
+  group_by(ano_mes) |>
+  summarise(
+    media_boi_rs = mean(boi_rs, na.rm = TRUE),
+    media_boi_sp = mean(boi_sp, na.rm = TRUE)
+  )
+
+
+media_mensal |>
   dplyr::mutate(
-    diferencial_base = boi_sp - boi_rs,
-    mm_dfb = zoo::rollmean(
-        diferencial_base,
-          k = 15,
-            fill = NA,
-              na.rm = TRUE
-      )
-    ) 
+    diferencial_base_nominal = media_boi_sp - media_boi_rs,
+    diferencial_base_percentual = (media_boi_rs / media_boi_sp) - 1,
+    color = ifelse(diferencial_base_percentual < 0, "#f67570", "#19bfc3") # Definindo as cores
+  ) |>
+  ggplot(aes(ano_mes, diferencial_base_percentual)) +
+  #geom_col() +
+  geom_hline(yintercept = 0, lty = 3, color = "red") +
+  #scale_fill_identity() # Para aplicar as cores definidas diretamente
+  geom_line() 
+```
 
-var_dfb_boi <- dfb_boi |>
-    dplyr::mutate(
-        ano = lubridate::year(data),
-        mes = lubridate::month(data),
-        .before = boi_rs
-    ) |>
-    dplyr::group_by(ano, mes) |>
-    dplyr::summarise(var_dfb = mean(diferencial_base / boi_sp)*100) |>
-    #dplyr::filter(ano >= 2023) |>
-    ggplot(aes(mes, var_dfb)) +
-    geom_col()  
-   
-    
-dfb_boi |>
-  ggplot(aes(data, var_dfb)) +
+
+```{r}	
+media_mensal |>
+  dplyr::mutate(
+    diferencial_base_nominal = media_boi_sp - media_boi_rs,
+    diferencial_base_percentual = (media_boi_rs / media_boi_sp) - 1,
+    color = ifelse(diferencial_base_nominal < 0, "#f67570", "#19bfc3") # Definindo as cores
+  ) |>
+  ggplot(aes(ano_mes, diferencial_base_nominal, fill = color)) +
   geom_col() +
-  #geom_smooth(method = "gam") +
-  #geom_hline(yintercept = 0, lty = 3) +
-  #geom_line(color = "dodgerblue4", linewidth = 1) +
-  theme_bw()
-
+  scale_fill_identity() # Para aplicar as cores definidas diretamente
 ``` 
