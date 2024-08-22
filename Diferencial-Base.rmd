@@ -1,0 +1,122 @@
+---
+title: "Diferencial de base do boi gordo"
+description: ""
+author script: "Ítalo Marques-Monteiro"
+date: "2024-04-26"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+praca_rs <- readr::read_csv(
+    "c:\\Users\\italo\\OneDrive\\Área de Trabalho\\GitHub\\NESPro\\.vscode\\Dataset/GadoGordo.csv"
+  ) |>
+  dplyr::filter(preco == "Médio") |>
+  dplyr::select(!c(pv_macho, pv_femea, pc_femea), boi_rs = pc_macho) |>
+  dplyr::mutate(
+    boi_rs = boi_rs * 15,
+    #pc_femea = pc_femea * 15
+  ) |> dplyr::select(-preco)
+
+praca_sp <- readr::read_csv("c:\\Users\\italo\\OneDrive\\Área de Trabalho\\GitHub\\Cepea-Esalq\\.github\\.vscode\\Dataset cepea\\Cepea-Boi-Gordo.csv" # nolint
+  ) |>
+  dplyr::select(data, boi_sp = a_vista_r)
+```
+
+
+```{r}
+# Realizar o join entre os datasets de RS e SP
+dados_join <- praca_rs |>
+  dplyr::inner_join(praca_sp, by = "data")
+
+
+# Calcular o diferencial de base
+dados_join <- dados_join |>
+  dplyr::mutate(
+    diferencial_base_nominal = boi_sp - boi_rs,
+    diferencial_base_percentual = ((boi_rs / boi_sp) - 1) * 100
+    #diferencial_base_percentual = ((boi_rs - boi_sp) /boi_sp) * 100
+    )
+
+
+# Calcular a média mensal e o desvio padrão dessa média
+
+resultados_mensais <- dados_join |>
+  dplyr::mutate(mes = lubridate::floor_date(data, "month")) |>
+  dplyr::group_by(mes) |>
+  dplyr::summarise(
+    media_diferencial_nominal = mean(diferencial_base_nominal, na.rm = TRUE),
+    media_diferencial_percentual = mean(diferencial_base_percentual, na.rm = TRUE),
+    desvio_padrao_nominal = sd(diferencial_base_nominal, na.rm = TRUE)
+  )
+
+# Exibir o resultado final
+#resultados_mensais |> print(n = 112)
+```
+
+
+```{r}	
+# Exibir o dispersão dos devios padrões 
+resultados_mensais |> 
+    ggplot(aes(mes,desvio_padrao_nominal)) +
+    geom_smooth(method = "loess") +
+    geom_point() +
+    scale_x_date(date_breaks = "3 month", date_labels = "%b %Y") +
+    labs(
+        title = "Desvio Parão:",
+        subtitle = "Dispersão dos desvios padrões do diferencial de base entre os\nestados do Rio Grande do Sul (RS) e São Paulo (SP)",
+        x = "Mês-Ano",
+        y = "Desvio Padrão"
+    ) +
+    theme(
+        plot.title = ggtext::element_markdown(face = "bold", family = "Open Sans", size = 25, hjust = 0, color = "gray40",), 
+        #plot.caption = ggtext::element_markdown(family = "Open Sans", hjust = 0, margin = margin(10,0,0,0), size = 8, color = "black", lineheight = 1.2),
+        panel.background = element_rect(fill = "white", color = "grey90"),
+        plot.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey90"),
+        legend.background = element_blank(),
+        legend.position = c(0.7, 0.8),
+        legend.key = element_rect(fill = "grey95", color = "grey95"),
+        legend.text = element_text(color = "grey40", size = 12),
+        legend.title = element_text(face = "bold", color = "grey40"),
+        axis.title.x = ggtext::element_markdown(face = "bold", family = "Open Sans",size = 15, hjust = 0, color = "gray50"),
+        axis.title.y = element_blank(),
+        axis.text.y = ggtext::element_markdown(face = "bold", family = "Open Sans",size = 8, hjust = 0, color = "gray50"),
+        axis.text.x = ggtext::element_markdown(
+          face = "bold", family = "Open Sans" ,size = 8, color = "gray50", angle = 90, hjust = 1, vjust = 0.5) 
+  )
+```
+
+```{r}	
+# Exibir o dispersão dos devios padrões 
+resultados_mensais |> 
+    ggplot(aes(mes,media_diferencial_percentual)) +
+    geom_col() +
+    scale_x_date(date_breaks = "3 month", date_labels = "%b %Y") +
+    labs(
+        title = "Diferencial de base percentual:",
+        subtitle = "Evolução do diferencial de base entre os\nestados do Rio Grande do Sul (RS) e São Paulo (SP)",
+        x = "Mês-Ano",
+        y = "%"
+    ) +
+    theme(
+        plot.title = ggtext::element_markdown(face = "bold", family = "Open Sans", size = 25, hjust = 0, color = "gray40",), 
+        #plot.caption = ggtext::element_markdown(family = "Open Sans", hjust = 0, margin = margin(10,0,0,0), size = 8, color = "black", lineheight = 1.2),
+        panel.background = element_rect(fill = "white", color = "grey90"),
+        plot.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey90"),
+        legend.background = element_blank(),
+        legend.position = c(0.7, 0.8),
+        legend.key = element_rect(fill = "grey95", color = "grey95"),
+        legend.text = element_text(color = "grey40", size = 12),
+        legend.title = element_text(face = "bold", color = "grey40"),
+        axis.title.x = ggtext::element_markdown(face = "bold", family = "Open Sans",size = 15, hjust = 0, color = "gray50"),
+        axis.title.y = element_blank(),
+        axis.text.y = ggtext::element_markdown(face = "bold", family = "Open Sans",size = 8, hjust = 0, color = "gray50"),
+        axis.text.x = ggtext::element_markdown(
+          face = "bold", family = "Open Sans" ,size = 8, color = "gray50", angle = 90, hjust = 1, vjust = 0.5) 
+  )
+```
