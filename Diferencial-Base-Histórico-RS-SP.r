@@ -121,4 +121,4 @@ plot_historico <- media_historica |>
         axis.text.x = ggtext::element_markdown(face = "bold", family = font2, size = 13, color = "gray40")
     )
 
-ggsave(".vscode\\Graph index\\Diferencial de base historico-RS/SP.png", plot = plot_historico, dpi = 300)
+ggsave(".github\\.vscode\\Graph index\\Diferencial de base historico-RS/SP.png", plot = plot_historico, dpi = 300)
