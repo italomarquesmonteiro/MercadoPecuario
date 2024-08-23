@@ -68,7 +68,7 @@ colors <- "gray40"
 fundo <- "white"
 
 title_text <- glue::glue('**Diferencial de base:**') # nolint
-subtitle_text <- glue::glue("**Percentual histórico do diferencial de base mensal do preços do boi gordo<br>entre as praças do Rio Grande do Sul (RS) e São Paulo (SP) de 2015 a 2024.**")
+subtitle_text <- glue::glue("**Percentual histórico do diferencial de base para cada mês do preços do boi gordo<br>entre as praças do Rio Grande do Sul (RS) e São Paulo (SP) de 2015 a 2024.**")
 caption_text <- glue::glue(
   "**Dados:** Núcleo de Estudos em Sistemas de Produção de Bovinos de Corte e Cadeia Produtiva (NESPro) e Centro de Estudos Avançados em Economia Aplicada (Cepea-Esalq)<br>", # nolint
   #"**Nota:** As Unidades da Federação, Amapá, Distrito Federal e Paraíba não apresentaram dados<br>",
@@ -92,6 +92,8 @@ plot_historico <- media_historica |>
     alpha = 0.7,
     size = 1.5) +
   #geom_hline(yintercept = 0, color = "grey20", linewidth = 1.5) +
+  scale_y_continuous(breaks = seq(-3, 9.3, 3), labels = scales::dollar_format(
+    prefix = "", suffix = "%")) +
   geom_text(aes(label = round(media_diferencial, 2)), 
             vjust = -0.5,
             family = "Open Sans",
@@ -116,9 +118,14 @@ plot_historico <- media_historica |>
         legend.text = element_text(color = "grey40", size = 12),
         legend.title = element_text(face = "bold", color = "grey40"),
         axis.title.x = ggtext::element_markdown(face = "bold", family = font2, size = 13, color = "gray40"),
-        axis.title.y = ggtext::element_markdown(face = "bold", family = font2, size = 13, color = "gray40"),
+        axis.title.y = element_blank(),
         axis.text.y = ggtext::element_markdown(face = "bold", family = font2, size = 13, color = "gray40"),
         axis.text.x = ggtext::element_markdown(face = "bold", family = font2, size = 13, color = "gray40")
     )
 
-ggsave(".github\\.vscode\\Graph index\\Diferencial de base historico-RS/SP.png", plot = plot_historico, dpi = 300)
+ggsave(
+  ".github\\.vscode\\Graph index\\Diferencial de base.png",
+  plot = plot_historico,
+  width = 14,
+  height = 10.4,
+  dpi = 300)
