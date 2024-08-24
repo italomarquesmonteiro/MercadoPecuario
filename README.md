@@ -4,7 +4,7 @@
 
 ##
 
-<img style="width:600px; height:250px;" src=".vscode\Graph index\Logo-MercadoPecuario.PNG" alt="Logo IBGE">
+<img style="width:600px; height:250px;" src=".github\.vscode\Graph index\Logo-MercadoPecuario.PNG" alt="Logo IBGE">
 
 # Contatos do autor
 
@@ -28,25 +28,41 @@ Este projeto tem como principal objetivo reunir informações essenciais para ca
 
 ## Dados
 
-Os dados analisados neste contexto serão minuciosamente coletados e cruzados para fortalecer a robustez da análise. As fontes utilizadas estão diretamente relacionadas ao cenário do agronegócio no país, incluindo instituições renomadas como [Cepea](https://www.cepea.esalq.usp.br/br), [NESPro](https://www.ufrgs.br/nespro/), [Epagri](https://cepa.epagri.sc.gov.br/), [Emater](https://www.emater.tche.br/site/index.php), [MAPA](https://www.gov.br/agricultura/pt-br), [Embrapa](https://www.embrapa.br/), [Seapi](https://www.agricultura.rs.gov.br/inicial), [CTPEC](https://www.ctpecunipampa.com.br/) e [USDA-Brazil](https://usdabrazil.org.br/).
+Os dados analisados neste contexto serão minuciosamente coletados e cruzados para fortalecer a robustez da análise. As fontes utilizadas estão diretamente relacionadas ao cenário do agronegócio no país, incluindo instituições renomadas como [Cepea](https://www.cepea.esalq.usp.br/br), [IBGE](https://www.ibge.gov.br/) [NESPro](https://www.ufrgs.br/nespro/), [Epagri](https://cepa.epagri.sc.gov.br/), [Emater](https://www.emater.tche.br/site/index.php), [MAPA](https://www.gov.br/agricultura/pt-br), [Embrapa](https://www.embrapa.br/), [Seapi](https://www.agricultura.rs.gov.br/inicial), [CTPEC](https://www.ctpecunipampa.com.br/), [FAO](https://www.fao.org/home/en/) e [USDA-Brazil](https://usdabrazil.org.br/).
 
 > [!NOTE]
 > 
+
+## Diferencial de base histórico RS Vs SP
+
+🔍 Análise do Diferencial de Base no Mercado de Boi Gordo: Rio Grande do Sul (RS) vs. São Paulo (SP) – 2015 a 2024 📊
+
+O gráfico abaixo ilustra o percentual histórico do diferencial de base mensal entre as duas regiões.
+
+💡 Principais Insights:
+
+- De janeiro a julho: Observa-se um diferencial positivo crescente, com destaque para junho (8,96%) e julho (9,26%). Isso indica que, historicamente, o preço do boi gordo no RS tem sido superior ao de SP nesses meses.
+- De setembro a novembro: O cenário se inverte, com o diferencial tornando-se negativo, atingindo -2,81% em setembro. Isso sugere uma maior competitividade ou oferta de boi gordo em SP durante esses meses.
+- Dezembro: O diferencial volta a ser positivo, mas em um patamar baixo (0,61%), possivelmente refletindo ajustes de mercado no final do ano.
+
+Esse insight ressalta a importância de entender as dinâmicas regionais e temporais no mercado de pecuária de corte. Para os produtores e analistas, monitorar essas variações pode ser crucial para otimizar a rentabilidade e a estratégia de venda.
+
+<img style="width:px; height:px;" src=".github\.vscode\Graph index\Diferencial de base.PNG" alt="RThist-RS-SP">
 
 ## Ágio do bezerro
 
 Entender e calcular o ágio é fundamental para análise de mercado e tomada de decisões, permitindo avaliar a eficiência na comercialização, seja na compra ou na venda de animais. Este indicador fornece insights valiosos para otimizar os resultados da atividade pecuária, especialmente em um cenário de margens ajustadas.
 
-<img style="width:px; height:px;" src=".vscode/Graph index/AgioBezerro.png" alt="Ágio Bezerro">
+<img style="width:px; height:px;" src=".github\.vscode\Graph index\AgioBezerro.png" alt="Ágio Bezerro">
 
 ## Relação de troca: Boi Cepea vs Bezerro-MS
 
-<img style="width:px; height:px;" src=".vscode\Graph index\RT-Cepea.png" alt="Ágio Bezerro">
+<img style="width:px; height:px;" src=".github\.vscode\Graph index\RT-Cepea.png" alt="Ágio Bezerro">
 
 ## Relação de troca: Nespro | CTPEC
 
-<img style="width:px; height:px;" src=".vscode\Graph index\RT-Nespro.png" alt="Ágio Bezerro">
+<img style="width:px; height:px;" src=".github\.vscode\Graph index\RT-Nespro.png" alt="Ágio Bezerro">
 
 ## Relação de troca: Arroba do boi vs Salário Mínimo
 
-<img style="width:px; height:px;" src=".vscode\Graph index\RT-Arroba-Salário.png" alt="RT-@-R$">
+<img style="width:px; height:px;" src=".github\.vscode\Graph index\RT-Arroba-Salário.png" alt="RT-@-R$">
