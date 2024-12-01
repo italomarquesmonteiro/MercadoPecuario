@@ -33,6 +33,30 @@ Os dados analisados neste contexto serão minuciosamente coletados e cruzados pa
 > [!NOTE]
 > 
 
+
+## Comercialização de bovinos no Rio Grande do Sul
+
+A tabela abaixo apresenta dados do mercado bovino no Rio Grande do Sul em novembro de 2024. O valor médio da arroba do boi gordo no período foi de R$ 303,75. Os dados incluem informações sobre preços por cabeça, preços por quilograma e a relação de troca em arrobas para diferentes categorias de gado.
+
+|categoria    |R$ cabeça  |R$/kg  |troca(@)|
+|-------------|-----------|-------|------  |
+| Boi Magro   | 2675.24   | 8.44  | 8.76   |
+| Novilha     | 2945.54   | 10.21 | 9.71   |
+| Novilho     | 2948.53   | 9.30  | 9.72   |
+| Terneira    | 1851.61   | 10.20 | 6.10   |
+| Terneiro    | 1940.85   | 10.37 | 6.39   |
+| Vaca Cria   | 4126.41   | 8.78  | 13.61  |
+| Vaca Falhada| 3498.14   | 8.80  | 11.73  |
+> [!NOTE]
+> *Para o cálculo do valor por cabeça, foi utilizado o peso médio histórico das categorias comercializadas nas feiras.
+
+
+Em novembro de 2024, os preços do mercado bovino no Rio Grande do Sul apresentaram variações marcantes entre as categorias. A Vaca Cria liderou como o animal de maior valor por cabeça, sendo negociada em média por R$ 4.126,41, enquanto a Terneira registrou o menor preço, com uma média de R$ 1.851,61.
+
+Quando analisamos o preço por quilograma, os animais mais jovens, como Terneiras (R$ 10,20/kg) e Terneiros (R$ 10,37/kg), destacaram-se com os maiores valores. Por outro lado, categorias como o Boi Magro (R$ 8,44/kg) e a Vaca Cria (R$ 8,78/kg) apresentaram os preços mais baixos por peso.
+
+A relação de troca, que reflete o número de arrobas de boi gordo necessário para adquirir um animal, também evidencia contrastes. As categorias jovens, como Terneira (6,10 arrobas) e Terneiro (6,39 arrobas), exigem menos arrobas devido ao menor peso por cabeça e ao preço por quilograma mais elevado. Já a Vaca Cria, com uma relação de troca de 13,61 arrobas, demandou o maior esforço relativo, influenciada pelo alto preço por cabeça e menor valorização por peso.
+
 ## Diferencial de base histórico RS Vs SP
 
 🔍 Análise do Diferencial de Base no Mercado de Boi Gordo: Rio Grande do Sul (RS) vs. São Paulo (SP) – 2015 a 2024 📊
